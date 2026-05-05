@@ -26,8 +26,8 @@ serve(async (req: Request) => {
       headers: { "Content-Type": "application/json" } 
     })
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err)
-    return new Response(JSON.stringify({ error: errorMessage }), { 
+    console.error('btcpay-webhook error:', err)
+    return new Response(JSON.stringify({ error: 'Invalid request' }), { 
       status: 400, 
       headers: { "Content-Type": "application/json" } 
     })
