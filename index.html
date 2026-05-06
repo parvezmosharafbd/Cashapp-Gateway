@@ -3,94 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pay Cashapp - Bitcoin Lightning</title>
+    <title>Pay Cashapp - Crypto Payment Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { background-color: #0b0e11; }
-        .active-tab { background-color: #00c853; color: black; font-weight: bold; }
         .glass-card { background-color: #161a1e; border: 1px solid #2b2f36; }
+        /* কাস্টম স্ক্রলবার হাইড করার জন্য */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
     </style>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
         
-        <!-- Cash App Style Navigation Header -->
         <div class="flex items-center justify-between mb-6">
-            <button onclick="goBack()" class="p-2 hover:bg-[#2b2f36] rounded-full transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <div class="bg-[#00D632] w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-[#00D632]/20">
+                $
+            </div>
+            
+            <a href="YOUR_TELEGRAM_LINK_HERE" target="_blank" class="text-blue-500 hover:text-blue-400 font-medium text-sm underline decoration-blue-500/30 underline-offset-4">
+                Join Telegram
+            </a>
+            
+            <div class="flex items-center space-x-1 px-3 py-1.5 rounded-full border border-[#2b2f36] bg-[#1a1e24]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                 </svg>
-            </button>
-            <h2 id="headerTitle" class="text-lg font-medium text-gray-200">Messenger</h2>
-            <button class="p-2 hover:bg-[#2b2f36] rounded-full transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
-            </button>
+                <span class="text-xs text-gray-400 font-medium">Secure</span>
+            </div>
         </div>
 
-        <!-- App Logo -->
         <div class="text-center mb-6">
-            <div class="bg-[#00c853] w-12 h-12 rounded-full mx-auto flex items-center justify-center text-black font-bold text-xl mb-2 shadow-lg">P</div>
-            <h1 class="text-2xl font-semibold">Pay Cashapp</h1>
+            <div class="bg-[#00D632] w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white font-bold text-4xl mb-3 shadow-[0_0_20px_rgba(0,214,50,0.3)]">
+                $
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">Cash App</h1>
         </div>
 
-        <!-- Progress Tabs -->
-        <div class="flex bg-[#2b2f36] rounded-full p-1 mb-8">
-            <div id="tab1" class="flex-1 text-center py-2 rounded-full text-sm active-tab">1. Details</div>
-            <div id="tab2" class="flex-1 text-center py-2 rounded-full text-sm text-gray-400">2. Pay</div>
-        </div>
-
-        <!-- STEP 1: Details Form -->
         <div id="step1">
-            <form id="paymentForm" class="space-y-4">
+            <form id="paymentForm" class="space-y-5">
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Full Name</label>
-                    <input type="text" id="userName" placeholder="Enter your name" required class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 focus:outline-none focus:border-[#00c853]">
+                    <label class="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider font-semibold">Email</label>
+                    <input type="email" id="userEmail" placeholder="name@email.com" required class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-2xl p-3.5 focus:outline-none focus:border-[#00c853] transition-colors">
                 </div>
+                
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Email</label>
-                    <input type="email" id="userEmail" placeholder="name@email.com" required class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 focus:outline-none focus:border-[#00c853]">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Amount (USD)</label>
+                    <label class="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider font-semibold">Amount (USD)</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-3 text-[#00c853] font-bold">$</span>
-                        <input type="number" id="payAmount" value="10.00" min="10" max="1000" class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 pl-8 focus:outline-none focus:border-[#00c853]">
+                        <span class="absolute left-4 top-3.5 text-[#00c853] font-bold text-lg">$</span>
+                        <input type="number" id="payAmount" value="10" min="2" max="2000" class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-2xl p-3.5 pl-9 text-lg font-medium focus:outline-none focus:border-[#00c853] transition-colors">
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-2 font-medium">Between 2 and 2,000 USD.</p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-400 mb-3 font-semibold">Quick amounts</p>
+                    
+                    <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$10</button>
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$15</button>
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$20</button>
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$25</button>
+                    </div>
+                    
+                    <div id="extraAmounts" class="hidden">
+                        <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$50</button>
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$75</button>
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$100</button>
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$150</button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2.5">
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$200</button>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3 border border-[#2b2f36] rounded-full py-2 cursor-pointer hover:bg-[#2b2f36] transition-colors" id="toggleAmountsBtn">
+                        <span class="text-[#00c853] text-sm font-semibold underline decoration-[#00c853]/40 underline-offset-2">Fewer amounts</span>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-[#00c853] hover:bg-[#00a344] text-black font-bold py-4 rounded-full transition-all duration-300 mt-4 flex items-center justify-center shadow-lg">
-                    Continue to payment <span class="ml-2">→</span>
+                <div class="flex justify-center items-center space-x-6 pt-2 pb-2">
+                    <div class="flex items-center text-[#00D632] space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <span class="text-xs font-semibold">Secure</span>
+                    </div>
+                    <div class="flex items-center text-[#00D632] space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        <span class="text-xs font-semibold">Instant</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#00D632] hover:bg-[#00c853] text-black font-bold py-4 rounded-full transition-all duration-300 flex items-center justify-center shadow-[0_0_15px_rgba(0,214,50,0.3)]">
+                    Continue to payment <span class="ml-2 font-bold text-lg">→</span>
                 </button>
             </form>
         </div>
 
-        <!-- STEP 2: Invoice/QR (Hidden) -->
-        <div id="step2" class="hidden text-center space-y-6">
-            <div class="bg-yellow-50 bg-opacity-10 p-2 rounded-lg inline-block border border-yellow-500/20">
-                <p class="text-xs text-yellow-200 uppercase tracking-tighter">Time Remaining <span id="timer" class="font-mono ml-2 text-lg">59:59</span></p>
-            </div>
+        <div id="step2" class="hidden text-center space-y-5">
             
-            <div class="space-y-1">
-                <h3 class="text-gray-400 text-sm uppercase tracking-widest">Amount Due</h3>
-                <p class="text-4xl font-bold text-white">$<span id="displayAmount">0.00</span></p>
-                <p class="text-xs text-gray-400">Scan or tap to pay</p>
+            <div class="flex bg-[#2b2f36] p-1.5 rounded-xl justify-between mb-2">
+                <button type="button" onclick="switchMethod('lightning')" id="tab-lightning" class="flex-1 py-2 text-xs font-bold bg-[#00D632] text-black rounded-lg transition-all shadow-md">Lightning</button>
+                <button type="button" onclick="switchMethod('binance')" id="tab-binance" class="flex-1 py-2 text-xs font-bold text-gray-400 hover:text-white rounded-lg transition-all">Binance Pay</button>
+                <button type="button" onclick="switchMethod('usdt')" id="tab-usdt" class="flex-1 py-2 text-xs font-bold text-gray-400 hover:text-white rounded-lg transition-all">USDT (TRC20)</button>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl inline-block mx-auto shadow-inner">
+            <div class="space-y-1">
+                <div class="inline-block bg-yellow-50 bg-opacity-10 px-3 py-1 rounded-full border border-yellow-500/20 mb-2">
+                    <p class="text-[10px] text-yellow-200 uppercase tracking-wider font-semibold">Time Remaining <span id="timer" class="font-mono ml-1 text-sm">59:59</span></p>
+                </div>
+                <h3 class="text-gray-400 text-xs uppercase tracking-widest font-semibold">Amount Due</h3>
+                <p class="text-4xl font-bold text-white">$<span id="displayAmount">0.00</span></p>
+            </div>
+
+            <div class="bg-white p-3 rounded-2xl inline-block mx-auto shadow-inner">
                 <div id="qrcode"></div>
             </div>
 
             <div class="text-left space-y-3 bg-[#0b0e11] p-4 rounded-xl text-sm border border-[#2b2f36]">
-                <div class="flex justify-between"><span class="text-gray-500">Invoice ID</span><span class="font-mono text-[10px] text-gray-300">A618-1418-96A4-91AA</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="text-yellow-500 text-xs font-bold uppercase tracking-tighter animate-pulse">● Awaiting Payment</span></div>
-                <div class="flex flex-col"><span class="text-gray-500 mb-1">Lightning Address</span><span class="font-mono text-[10px] break-all text-gray-400 bg-[#161a1e] p-2 rounded border border-[#2b2f36]">lnbc129370n...2sq28nvu6</span></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 text-xs font-semibold">Status</span>
+                    <span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest animate-pulse flex items-center"><span class="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-1.5"></span> Awaiting</span>
+                </div>
+                
+                <div class="flex flex-col">
+                    <span class="text-gray-500 mb-1.5 text-xs font-semibold" id="dynamicLabel">Lightning Address</span>
+                    <div class="flex space-x-2">
+                        <input type="text" id="dynamicValue" readonly class="w-full font-mono text-[11px] text-gray-300 bg-[#161a1e] p-2.5 rounded-lg border border-[#2b2f36] focus:outline-none" value="lnbc129370n...">
+                        <button onclick="copyData()" class="bg-[#2b2f36] hover:bg-[#3b3f46] text-[#00D632] px-3 rounded-lg text-xs font-bold transition-colors border border-[#3b3f46]">Copy</button>
+                    </div>
+                </div>
             </div>
 
-            <button onclick="copyInvoice()" class="w-full bg-[#2b2f36] hover:bg-[#3b3f46] border border-[#3b3f46] text-white py-4 rounded-xl font-semibold transition-colors">Copy invoice</button>
+            <button onclick="location.reload()" class="w-full text-gray-400 hover:text-white py-2 text-xs font-semibold transition-colors underline decoration-gray-600 underline-offset-4">Cancel Payment & Go Back</button>
         </div>
     </div>
 
@@ -98,47 +148,109 @@
         const form = document.getElementById('paymentForm');
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
-        const tab1 = document.getElementById('tab1');
-        const tab2 = document.getElementById('tab2');
-        const headerTitle = document.getElementById('headerTitle');
+        const amountInput = document.getElementById('payAmount');
+        let qrCodeObj = null;
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            goToStep2();
+        // --- Demo Data for Different Crypto Networks ---
+        const paymentData = {
+            lightning: {
+                address: "lnbc129370n2500000000000000000000000000000000000000",
+                label: "Lightning Invoice"
+            },
+            binance: {
+                address: "123456789 (Binance Pay ID)", // Replace with real Binance Pay ID
+                label: "Binance Pay ID"
+            },
+            usdt: {
+                address: "TRXWALLETADDRESSGOTOYOURBINANCETRC20", // Replace with real USDT TRC20 Address
+                label: "USDT (TRC20) Address"
+            }
+        };
+
+        // Quick Amounts Setup
+        const quickBtns = document.querySelectorAll('.quick-btn');
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                amountInput.value = btn.innerText.replace('$', '');
+            });
         });
 
-        function goToStep2() {
+        // Toggle More/Fewer Amounts
+        const toggleBtn = document.getElementById('toggleAmountsBtn');
+        const extraAmounts = document.getElementById('extraAmounts');
+        extraAmounts.classList.remove('hidden'); // Show by default as per screenshot
+        
+        toggleBtn.addEventListener('click', () => {
+            extraAmounts.classList.toggle('hidden');
+            if(extraAmounts.classList.contains('hidden')) {
+                toggleBtn.innerHTML = '<span class="text-[#00c853] text-sm font-semibold underline decoration-[#00c853]/40 underline-offset-2">More amounts</span>';
+            } else {
+                toggleBtn.innerHTML = '<span class="text-[#00c853] text-sm font-semibold underline decoration-[#00c853]/40 underline-offset-2">Fewer amounts</span>';
+            }
+        });
+
+        // Form Submit
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
             step1.classList.add('hidden');
             step2.classList.remove('hidden');
-            tab1.classList.remove('active-tab');
-            tab1.classList.add('text-gray-400');
-            tab2.classList.add('active-tab');
-            headerTitle.innerText = "Invoice";
-            
-            document.getElementById('displayAmount').innerText = parseFloat(document.getElementById('payAmount').value).toFixed(2);
-
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: "lnbc129370n2500000000000000000000000000000000000000000000000",
-                width: 180,
-                height: 180
-            });
+            document.getElementById('displayAmount').innerText = parseFloat(amountInput.value).toFixed(2);
+            switchMethod('lightning'); // Default to Lightning
             startTimer();
+        });
+
+        // Switch Crypto Payment Method Tab Logic
+        function switchMethod(method) {
+            // Update Tab Styling
+            ['lightning', 'binance', 'usdt'].forEach(m => {
+                const tab = document.getElementById(`tab-${m}`);
+                if (m === method) {
+                    tab.className = "flex-1 py-2 text-xs font-bold bg-[#00D632] text-black rounded-lg transition-all shadow-md";
+                } else {
+                    tab.className = "flex-1 py-2 text-xs font-bold text-gray-400 hover:text-white rounded-lg transition-all";
+                }
+            });
+
+            // Update Labels and Inputs
+            document.getElementById('dynamicLabel').innerText = paymentData[method].label;
+            document.getElementById('dynamicValue').value = paymentData[method].address;
+
+            // Generate/Update QR Code
+            generateQR(paymentData[method].address);
         }
 
-        function goBack() {
-            if (!step2.classList.contains('hidden')) {
-                step2.classList.add('hidden');
-                step1.classList.remove('hidden');
-                tab2.classList.remove('active-tab');
-                tab2.classList.add('text-gray-400');
-                tab1.classList.add('active-tab');
-                headerTitle.innerText = "Messenger";
-            } else {
-                window.history.back();
-            }
+        // QR Generation Function
+        function generateQR(textData) {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = ""; // Clear existing QR
+            qrCodeObj = new QRCode(qrContainer, {
+                text: textData,
+                width: 170,
+                height: 170,
+                colorDark : "#000000",
+                colorLight : "#ffffff"
+            });
         }
 
+        // Copy to Clipboard
+        function copyData() {
+            const copyText = document.getElementById("dynamicValue");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            
+            // Visual feedback on copy button
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Copied!";
+            btn.classList.replace("text-[#00D632]", "text-white");
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.replace("text-white", "text-[#00D632]");
+            }, 2000);
+        }
+
+        // Timer
         function startTimer() {
             let time = 3600;
             const timerEl = document.getElementById('timer');
@@ -149,10 +261,6 @@
                 timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 time--;
             }, 1000);
-        }
-
-        function copyInvoice() {
-            alert("Invoice copied to clipboard!");
         }
     </script>
 </body>
