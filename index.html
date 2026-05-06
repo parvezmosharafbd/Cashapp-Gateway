@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay $NotyAmerica via Cash App</title>
-    <link rel="icon" href="https://cash.app/favicon.ico" type="image/x-icon">
     
-    <!-- 🚀 FIX 1: Tailwind CDN রিমুভ করে আপনার জেনারেট করা স্ট্যাটিক CSS লিংক করা হলো -->
+    <!-- কাস্টম Favicon (CORB Error ফিক্স করা হয়েছে) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300D632'/><text x='50' y='72' font-size='65' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>" type="image/svg+xml">
+    
+    <!-- 🚀 FIX 1: স্ট্যাটিক CSS লিংক করা হলো -->
     <link rel="stylesheet" href="style.css">
     
     <style>
@@ -19,22 +21,150 @@
         }
     </style>
 
-    <!-- 🚀 FIX 2: QRCode স্ক্রিপ্টটি হেডারেই থাকবে, কিন্তু defer দেওয়া হলো যাতে রেন্ডার ব্লক না করে -->
+    <!-- 🚀 FIX 2: defer ব্যবহার করে রেন্ডার ব্লকিং ফিক্স করা হলো -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
 
-    <!-- আপনার ডিজাইনের পুরো HTML কোড এখানে আগের মতোই থাকবে -->
     <div class="glass-card w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
-        <!-- ... (এখানে আপনার আগের HTML এর ভেতরের সব কোড বসবে) ... -->
-        <!-- শুধু পেজটি ছোট রাখার জন্য আমি HTML বডিটা হাইড করেছি, আপনি আপনার আগের বডিটাই রাখবেন -->
+        
+        <!-- Header -->
+        <div class="grid grid-cols-3 items-center mb-6 relative">
+            <button onclick="goBack()" id="backBtn" class="p-2 hover:bg-[#2b2f36] rounded-full transition-colors hidden justify-self-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </button>
+            <div id="backSpacer" class="w-10 h-10"></div>
+
+            <div class="text-center justify-self-center col-span-1">
+                <a href="YOUR_TELEGRAM_LINK_HERE" target="_blank" class="text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors">
+                    Join Telegram
+                </a>
+            </div>
+            
+            <div class="flex items-center space-x-1 px-3 py-1.5 rounded-full border border-[#2b2f36] bg-[#1a1e24] justify-self-end">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-xs text-gray-400 font-medium">Secure</span>
+            </div>
+        </div>
+
+        <!-- STEP 1: Form Area -->
+        <div id="step1">
+            <div class="text-center mb-6">
+                <div class="bg-[#00D632] w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white font-bold text-4xl mb-3 shadow-[0_0_20px_rgba(0,214,50,0.3)]">
+                    $
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight">Cash App</h1>
+            </div>
+
+            <form id="paymentForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider font-semibold">Email</label>
+                    <input type="email" id="userEmail" placeholder="name@email.com" required class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-2xl p-3.5 focus:outline-none focus:border-[#00c853] transition-colors">
+                </div>
+                
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider font-semibold">Amount (USD)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-[#00c853] font-bold text-lg">$</span>
+                        <input type="number" id="payAmount" value="10" min="2" max="2000" class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-2xl p-3.5 pl-9 text-lg font-medium focus:outline-none focus:border-[#00c853] transition-colors">
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-2 font-medium">Between 2 and 2,000 USD.</p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-400 mb-3 font-semibold">Quick amounts</p>
+                    <div class="grid grid-cols-4 gap-2.5 mb-2.5">
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$10</button>
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$15</button>
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$20</button>
+                        <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$25</button>
+                    </div>
+                    
+                    <div id="extraAmounts" class="hidden space-y-2.5">
+                        <div class="grid grid-cols-4 gap-2.5">
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$50</button>
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$75</button>
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$100</button>
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$150</button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2.5">
+                            <button type="button" class="quick-btn bg-[#2b2f36] border border-[#3b3f46] hover:border-[#00c853] text-gray-200 rounded-full py-2.5 text-sm font-semibold transition-all">$200</button>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3 border border-[#2b2f36] rounded-full py-2 cursor-pointer hover:bg-[#2b2f36] transition-colors" id="toggleAmountsBtn">
+                        <span class="text-[#00c853] text-sm font-semibold underline decoration-[#00c853]/40 underline-offset-2">More amounts</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center space-x-6 pt-2 pb-2">
+                    <div class="flex items-center text-[#00D632] space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <span class="text-xs font-semibold">Secure</span>
+                    </div>
+                    <div class="flex items-center text-[#00D632] space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        <span class="text-xs font-semibold">Instant</span>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-[#00D632] hover:bg-[#00c853] text-black font-bold py-4 rounded-full transition-all duration-300 flex items-center justify-center shadow-[0_0_15px_rgba(0,214,50,0.3)]">
+                    Continue to payment <span class="ml-2 font-bold text-lg">→</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- STEP 2: Invoice Area -->
+        <div id="step2" class="hidden text-center space-y-6">
+            <div class="space-y-1">
+                <div class="inline-block bg-yellow-50 bg-opacity-10 px-3 py-1 rounded-full border border-yellow-500/20 mb-2">
+                    <p class="text-[10px] text-yellow-200 uppercase tracking-wider font-semibold">Time Remaining <span id="timer" class="font-mono ml-1 text-sm">15:00</span></p>
+                </div>
+                
+                <h3 class="text-gray-400 text-xs uppercase tracking-widest font-semibold">Amount Due</h3>
+                <p class="text-4xl font-bold text-white">$<span id="displayAmount">0.00</span></p>
+                <p class="text-gray-200 text-sm mt-1">To <span class="font-semibold">Noty America</span></p>
+                <p class="text-xs text-gray-400 mt-2">Scan or tap to pay</p>
+            </div>
+
+            <a href="#" id="cashAppLink" class="bg-white p-3 rounded-2xl inline-block mx-auto shadow-inner relative group block cursor-pointer transition-transform hover:scale-105">
+                <div id="qrcode"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="bg-white p-1 rounded-lg">
+                        <div class="bg-[#00D632] w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                            $
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <div class="text-left space-y-3 bg-[#0b0e11] p-4 rounded-xl text-sm border border-[#2b2f36]">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 text-xs font-semibold">Invoice ID</span>
+                    <span id="invoiceIdDisplay" class="font-mono text-[10px] text-gray-300">Generating...</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 text-xs font-semibold">Status</span>
+                    <span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest animate-pulse flex items-center"><span class="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-1.5"></span> Awaiting Payment</span>
+                </div>
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <a href="#" id="payNowBtn" class="w-full bg-[#00D632] hover:bg-[#00c853] text-black font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center shadow-lg">
+                    Pay now <span class="ml-2 font-bold text-lg">→</span>
+                </a>
+                <button onclick="copyInvoice()" id="copyBtn" class="w-full bg-[#2b2f36] hover:bg-[#3b3f46] border border-[#3b3f46] text-white py-3 rounded-xl text-sm font-semibold transition-colors">Copy invoice</button>
+            </div>
+        </div>
     </div>
 
+    <!-- 🚀 FIX 3: জাভাস্ক্রিপ্ট DOMContentLoaded দিয়ে অপটিমাইজ করা হলো -->
     <script>
-        // 🚀 FIX 3: পুরো লজিকটি DOMContentLoaded এর ভেতরে দেওয়া হলো, 
-        // যাতে পেজ রেন্ডার হওয়ার আগে জাভাস্ক্রিপ্ট কোনো বাধা না দেয়।
         document.addEventListener("DOMContentLoaded", () => {
-            
             const form = document.getElementById('paymentForm');
             const step1 = document.getElementById('step1');
             const step2 = document.getElementById('step2');
@@ -63,7 +193,6 @@
                 });
             }
 
-            // Supabase API Integration
             const SUPABASE_URL = "https://pbxpdppibnmtyxfoyydr.supabase.co"; 
             const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo";
 
@@ -78,7 +207,7 @@
                     submitBtn.disabled = true;
 
                     try {
-                        const response = await fetch(`${SUPABASE_URL}/functions/v1/create-invoice`, {
+                        const response = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -94,7 +223,7 @@
                         }
 
                         currentLightningInvoice = data.lightningCode;
-                        showInvoice(data.amount, data.lightningCode, data.invoiceId);
+                        window.showInvoice(data.amount, data.lightningCode, data.invoiceId);
 
                     } catch (error) {
                         console.error(error);
@@ -106,7 +235,14 @@
                 });
             }
 
-            // Window Object-এ ফাংশনগুলো যুক্ত করা হচ্ছে যাতে HTML থেকে onClick এ কল করা যায়
+            // Window Object-এ গ্লোবাল ফাংশনগুলো
+            window.goBack = function() {
+                if (!step2.classList.contains('hidden')) {
+                    step2.classList.add('hidden');
+                    step1.classList.remove('hidden');
+                }
+            };
+
             window.showInvoice = function(amount, lnCode, invId) {
                 step1.classList.add('hidden');
                 step2.classList.remove('hidden');
