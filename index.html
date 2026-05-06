@@ -14,10 +14,26 @@
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl">
-        <!-- Header -->
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+        
+        <!-- Cash App Style Navigation Header -->
+        <div class="flex items-center justify-between mb-6">
+            <button onclick="goBack()" class="p-2 hover:bg-[#2b2f36] rounded-full transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </button>
+            <h2 id="headerTitle" class="text-lg font-medium text-gray-200">Messenger</h2>
+            <button class="p-2 hover:bg-[#2b2f36] rounded-full transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- App Logo -->
         <div class="text-center mb-6">
-            <div class="bg-[#00c853] w-12 h-12 rounded-full mx-auto flex items-center justify-center text-black font-bold text-xl mb-2">P</div>
+            <div class="bg-[#00c853] w-12 h-12 rounded-full mx-auto flex items-center justify-center text-black font-bold text-xl mb-2 shadow-lg">P</div>
             <h1 class="text-2xl font-semibold">Pay Cashapp</h1>
         </div>
 
@@ -44,39 +60,37 @@
                         <span class="absolute left-3 top-3 text-[#00c853] font-bold">$</span>
                         <input type="number" id="payAmount" value="10.00" min="10" max="1000" class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 pl-8 focus:outline-none focus:border-[#00c853]">
                     </div>
-                    <p class="text-[10px] text-gray-500 mt-1">Between 10 and 1,000 USD.</p>
                 </div>
 
-                <button type="submit" class="w-full bg-[#00c853] hover:bg-[#00a344] text-black font-bold py-4 rounded-full transition-all duration-300 mt-4 flex items-center justify-center">
+                <button type="submit" class="w-full bg-[#00c853] hover:bg-[#00a344] text-black font-bold py-4 rounded-full transition-all duration-300 mt-4 flex items-center justify-center shadow-lg">
                     Continue to payment <span class="ml-2">→</span>
                 </button>
             </form>
         </div>
 
-        <!-- STEP 2: Payment/QR (Hidden by default) -->
+        <!-- STEP 2: Invoice/QR (Hidden) -->
         <div id="step2" class="hidden text-center space-y-6">
-            <div class="bg-yellow-50 bg-opacity-10 p-2 rounded-lg inline-block">
-                <p class="text-xs text-yellow-200">TIME REMAINING <span id="timer" class="font-mono ml-2 text-lg">59:59</span></p>
+            <div class="bg-yellow-50 bg-opacity-10 p-2 rounded-lg inline-block border border-yellow-500/20">
+                <p class="text-xs text-yellow-200 uppercase tracking-tighter">Time Remaining <span id="timer" class="font-mono ml-2 text-lg">59:59</span></p>
             </div>
             
-            <div class="space-y-2">
-                <h3 class="text-gray-400 text-sm">AMOUNT DUE</h3>
-                <p class="text-3xl font-bold text-white">$<span id="displayAmount">0.00</span></p>
+            <div class="space-y-1">
+                <h3 class="text-gray-400 text-sm uppercase tracking-widest">Amount Due</h3>
+                <p class="text-4xl font-bold text-white">$<span id="displayAmount">0.00</span></p>
                 <p class="text-xs text-gray-400">Scan or tap to pay</p>
             </div>
 
-            <!-- QR Code Container -->
-            <div class="bg-white p-4 rounded-2xl inline-block mx-auto">
+            <div class="bg-white p-4 rounded-2xl inline-block mx-auto shadow-inner">
                 <div id="qrcode"></div>
             </div>
 
             <div class="text-left space-y-3 bg-[#0b0e11] p-4 rounded-xl text-sm border border-[#2b2f36]">
-                <div class="flex justify-between"><span class="text-gray-500">Invoice ID</span><span class="font-mono text-[10px]">A618-1418-96A4-91AA</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="text-yellow-500 text-xs font-bold">● AWAITING PAYMENT</span></div>
-                <div class="flex flex-col"><span class="text-gray-500 mb-1">Lightning Address</span><span class="font-mono text-[10px] break-all text-gray-300 bg-[#161a1e] p-1 rounded">lnbc129370n...2sq28nvu6</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Invoice ID</span><span class="font-mono text-[10px] text-gray-300">A618-1418-96A4-91AA</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="text-yellow-500 text-xs font-bold uppercase tracking-tighter animate-pulse">● Awaiting Payment</span></div>
+                <div class="flex flex-col"><span class="text-gray-500 mb-1">Lightning Address</span><span class="font-mono text-[10px] break-all text-gray-400 bg-[#161a1e] p-2 rounded border border-[#2b2f36]">lnbc129370n...2sq28nvu6</span></div>
             </div>
 
-            <button onclick="location.reload()" class="w-full bg-[#2b2f36] border border-[#3b3f46] text-white py-3 rounded-xl font-semibold">Copy invoice</button>
+            <button onclick="copyInvoice()" class="w-full bg-[#2b2f36] hover:bg-[#3b3f46] border border-[#3b3f46] text-white py-4 rounded-xl font-semibold transition-colors">Copy invoice</button>
         </div>
     </div>
 
@@ -86,41 +100,59 @@
         const step2 = document.getElementById('step2');
         const tab1 = document.getElementById('tab1');
         const tab2 = document.getElementById('tab2');
+        const headerTitle = document.getElementById('headerTitle');
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            
-            // UI Switch
+            goToStep2();
+        });
+
+        function goToStep2() {
             step1.classList.add('hidden');
             step2.classList.remove('hidden');
             tab1.classList.remove('active-tab');
             tab1.classList.add('text-gray-400');
             tab2.classList.add('active-tab');
+            headerTitle.innerText = "Invoice";
             
-            document.getElementById('displayAmount').innerText = document.getElementById('payAmount').value;
+            document.getElementById('displayAmount').innerText = parseFloat(document.getElementById('payAmount').value).toFixed(2);
 
-            // Generate Mock QR (In real case, fetch from BTCPay API)
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
                 text: "lnbc129370n2500000000000000000000000000000000000000000000000",
                 width: 180,
-                height: 180,
-                colorDark : "#000000",
-                colorLight : "#ffffff"
+                height: 180
             });
-            
             startTimer();
-        });
+        }
+
+        function goBack() {
+            if (!step2.classList.contains('hidden')) {
+                step2.classList.add('hidden');
+                step1.classList.remove('hidden');
+                tab2.classList.remove('active-tab');
+                tab2.classList.add('text-gray-400');
+                tab1.classList.add('active-tab');
+                headerTitle.innerText = "Messenger";
+            } else {
+                window.history.back();
+            }
+        }
 
         function startTimer() {
             let time = 3600;
             const timerEl = document.getElementById('timer');
-            setInterval(() => {
+            const countdown = setInterval(() => {
+                if(time <= 0 || step1.offsetParent !== null) clearInterval(countdown);
                 let mins = Math.floor(time / 60);
                 let secs = time % 60;
                 timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 time--;
             }, 1000);
+        }
+
+        function copyInvoice() {
+            alert("Invoice copied to clipboard!");
         }
     </script>
 </body>
