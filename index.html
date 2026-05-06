@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Cashapp - Bitcoin Lightning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { background-color: #0b0e11; }
+        .active-tab { background-color: #00c853; color: black; font-weight: bold; }
+        .glass-card { background-color: #161a1e; border: 1px solid #2b2f36; }
+    </style>
+</head>
+<body class="text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <div class="bg-[#00c853] w-12 h-12 rounded-full mx-auto flex items-center justify-center text-black font-bold text-xl mb-2">P</div>
+            <h1 class="text-2xl font-semibold">Pay Cashapp</h1>
+        </div>
+
+        <!-- Progress Tabs -->
+        <div class="flex bg-[#2b2f36] rounded-full p-1 mb-8">
+            <div id="tab1" class="flex-1 text-center py-2 rounded-full text-sm active-tab">1. Details</div>
+            <div id="tab2" class="flex-1 text-center py-2 rounded-full text-sm text-gray-400">2. Pay</div>
+        </div>
+
+        <!-- STEP 1: Details Form -->
+        <div id="step1">
+            <form id="paymentForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Full Name</label>
+                    <input type="text" id="userName" placeholder="Enter your name" required class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 focus:outline-none focus:border-[#00c853]">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Email</label>
+                    <input type="email" id="userEmail" placeholder="name@email.com" required class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 focus:outline-none focus:border-[#00c853]">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Amount (USD)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-[#00c853] font-bold">$</span>
+                        <input type="number" id="payAmount" value="10.00" min="10" max="1000" class="w-full bg-[#2b2f36] border border-[#3b3f46] rounded-xl p-3 pl-8 focus:outline-none focus:border-[#00c853]">
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1">Between 10 and 1,000 USD.</p>
+                </div>
+
+                <button type="submit" class="w-full bg-[#00c853] hover:bg-[#00a344] text-black font-bold py-4 rounded-full transition-all duration-300 mt-4 flex items-center justify-center">
+                    Continue to payment <span class="ml-2">→</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- STEP 2: Payment/QR (Hidden by default) -->
+        <div id="step2" class="hidden text-center space-y-6">
+            <div class="bg-yellow-50 bg-opacity-10 p-2 rounded-lg inline-block">
+                <p class="text-xs text-yellow-200">TIME REMAINING <span id="timer" class="font-mono ml-2 text-lg">59:59</span></p>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="text-gray-400 text-sm">AMOUNT DUE</h3>
+                <p class="text-3xl font-bold text-white">$<span id="displayAmount">0.00</span></p>
+                <p class="text-xs text-gray-400">Scan or tap to pay</p>
+            </div>
+
+            <!-- QR Code Container -->
+            <div class="bg-white p-4 rounded-2xl inline-block mx-auto">
+                <div id="qrcode"></div>
+            </div>
+
+            <div class="text-left space-y-3 bg-[#0b0e11] p-4 rounded-xl text-sm border border-[#2b2f36]">
+                <div class="flex justify-between"><span class="text-gray-500">Invoice ID</span><span class="font-mono text-[10px]">A618-1418-96A4-91AA</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="text-yellow-500 text-xs font-bold">● AWAITING PAYMENT</span></div>
+                <div class="flex flex-col"><span class="text-gray-500 mb-1">Lightning Address</span><span class="font-mono text-[10px] break-all text-gray-300 bg-[#161a1e] p-1 rounded">lnbc129370n...2sq28nvu6</span></div>
+            </div>
+
+            <button onclick="location.reload()" class="w-full bg-[#2b2f36] border border-[#3b3f46] text-white py-3 rounded-xl font-semibold">Copy invoice</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('paymentForm');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const tab1 = document.getElementById('tab1');
+        const tab2 = document.getElementById('tab2');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // UI Switch
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+            tab1.classList.remove('active-tab');
+            tab1.classList.add('text-gray-400');
+            tab2.classList.add('active-tab');
+            
+            document.getElementById('displayAmount').innerText = document.getElementById('payAmount').value;
+
+            // Generate Mock QR (In real case, fetch from BTCPay API)
+            document.getElementById('qrcode').innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), {
+                text: "lnbc129370n2500000000000000000000000000000000000000000000000",
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff"
+            });
+            
+            startTimer();
+        });
+
+        function startTimer() {
+            let time = 3600;
+            const timerEl = document.getElementById('timer');
+            setInterval(() => {
+                let mins = Math.floor(time / 60);
+                let secs = time % 60;
+                timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                time--;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
