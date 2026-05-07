@@ -223,7 +223,7 @@
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                             },
-                            body: JSON.stringify({ amount: amount, email: email })
+                            body: JSON.stringify({ amount: parseFloat(amount), email: email })
                         });
 
                         const data = await response.json();
