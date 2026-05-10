@@ -25,18 +25,19 @@
   --mono: 'DM Mono', monospace;
   --display: 'Syne', sans-serif;
   --body: 'DM Sans', sans-serif;
+  --sidebar-w: 220px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:var(--bg); color:var(--text); font-family:var(--body); min-height:100vh; overflow-x:hidden; }
 
-/* LOGIN */
+/* ===== LOGIN ===== */
 #loginScreen {
-  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px;
   background: radial-gradient(ellipse at 50% 0%, rgba(0,214,50,0.08) 0%, transparent 60%);
 }
 .login-box {
-  width:380px; background:var(--surface); border:1px solid var(--border2);
-  border-radius:20px; padding:40px; position:relative; overflow:hidden;
+  width:100%; max-width:380px; background:var(--surface); border:1px solid var(--border2);
+  border-radius:20px; padding:36px 28px; position:relative; overflow:hidden;
 }
 .login-box::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
@@ -67,17 +68,25 @@ body { background:var(--bg); color:var(--text); font-family:var(--body); min-hei
 .login-btn:hover { background:#00f03a; transform:translateY(-1px); }
 .login-error { color:var(--red); font-size:12px; text-align:center; margin-top:12px; display:none; }
 
-/* ADMIN */
+/* ===== ADMIN SHELL ===== */
 #adminScreen { display:none; }
 
-/* SIDEBAR */
+/* ===== MOBILE OVERLAY ===== */
+.sidebar-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6);
+  z-index:90; backdrop-filter:blur(2px);
+}
+.sidebar-overlay.open { display:block; }
+
+/* ===== SIDEBAR ===== */
 .sidebar {
-  position:fixed; left:0; top:0; bottom:0; width:220px;
+  position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w);
   background:var(--surface); border-right:1px solid var(--border);
   display:flex; flex-direction:column; z-index:100;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
 }
 .sidebar-brand {
-  padding:24px 20px; display:flex; align-items:center; gap:10px;
+  padding:20px 16px; display:flex; align-items:center; gap:10px;
   border-bottom:1px solid var(--border);
 }
 .brand-icon {
@@ -88,7 +97,11 @@ body { background:var(--bg); color:var(--text); font-family:var(--body); min-hei
 }
 .brand-text { font-family:var(--display); font-size:13px; font-weight:700; line-height:1.2; }
 .brand-sub { font-size:10px; color:var(--muted); font-weight:400; font-family:var(--mono); }
-.sidebar-nav { flex:1; padding:16px 12px; display:flex; flex-direction:column; gap:4px; }
+.sidebar-close {
+  display:none; margin-left:auto; background:none; border:none; color:var(--muted);
+  font-size:20px; cursor:pointer; padding:4px; line-height:1;
+}
+.sidebar-nav { flex:1; padding:14px 10px; display:flex; flex-direction:column; gap:3px; overflow-y:auto; }
 .nav-item {
   display:flex; align-items:center; gap:10px; padding:10px 12px;
   border-radius:9px; cursor:pointer; transition:all .15s;
@@ -97,8 +110,8 @@ body { background:var(--bg); color:var(--text); font-family:var(--body); min-hei
 }
 .nav-item:hover { background:var(--card); color:var(--text); }
 .nav-item.active { background:var(--green-dim); color:var(--green); }
-.nav-icon { font-size:16px; width:20px; text-align:center; }
-.sidebar-footer { padding:16px 12px; border-top:1px solid var(--border); }
+.nav-icon { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+.sidebar-footer { padding:14px 10px; border-top:1px solid var(--border); }
 .logout-btn {
   display:flex; align-items:center; gap:10px; padding:10px 12px;
   border-radius:9px; cursor:pointer; font-size:13px; font-weight:500;
@@ -106,99 +119,165 @@ body { background:var(--bg); color:var(--text); font-family:var(--body); min-hei
 }
 .logout-btn:hover { background:rgba(255,71,87,0.1); }
 
-/* MAIN */
-.main { margin-left:220px; min-height:100vh; }
+/* ===== TOPBAR ===== */
+.main { margin-left:var(--sidebar-w); min-height:100vh; transition:margin .25s; }
 .topbar {
-  padding:20px 28px; border-bottom:1px solid var(--border);
+  padding:14px 20px; border-bottom:1px solid var(--border);
   display:flex; align-items:center; justify-content:space-between;
-  background:var(--surface); position:sticky; top:0; z-index:50;
+  background:var(--surface); position:sticky; top:0; z-index:50; gap:12px;
 }
-.page-title { font-family:var(--display); font-size:20px; font-weight:700; }
-.topbar-right { display:flex; align-items:center; gap:12px; }
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.hamburger {
+  display:none; background:none; border:1px solid var(--border2); border-radius:8px;
+  color:var(--text); font-size:18px; cursor:pointer; padding:6px 8px; line-height:1;
+}
+.page-title { font-family:var(--display); font-size:18px; font-weight:700; }
+.topbar-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
 .status-dot { width:8px; height:8px; background:var(--green); border-radius:50%; box-shadow:0 0 8px var(--green); animation:pulse 2s infinite; }
 .status-text { font-size:12px; color:var(--muted); font-family:var(--mono); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-.content { padding:28px; }
+.content { padding:20px 16px; }
+@media(min-width:640px){ .content{ padding:24px 24px; } }
+@media(min-width:900px){ .content{ padding:28px 28px; } }
 
-/* SECTION */
+/* ===== SECTION ===== */
 .section { display:none; }
 .section.active { display:block; }
 
-/* STATS GRID */
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:20px;
+}
+@media(min-width:640px){ .stats-grid{ grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; } }
 .stat-card {
   background:var(--card); border:1px solid var(--border); border-radius:14px;
-  padding:20px; position:relative; overflow:hidden; transition:border .2s;
+  padding:16px; position:relative; overflow:hidden; transition:border .2s;
 }
+@media(min-width:640px){ .stat-card{ padding:20px; } }
 .stat-card:hover { border-color:var(--border2); }
 .stat-card::after {
   content:''; position:absolute; top:0; left:0; right:0; height:2px;
   background:var(--accent, var(--green)); opacity:.6;
 }
-.stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:500; margin-bottom:10px; }
-.stat-value { font-family:var(--display); font-size:26px; font-weight:700; line-height:1; margin-bottom:6px; }
-.stat-sub { font-size:12px; color:var(--muted); font-family:var(--mono); }
-.stat-icon { position:absolute; top:18px; right:18px; font-size:22px; opacity:.25; }
+.stat-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; font-weight:500; margin-bottom:8px; }
+.stat-value { font-family:var(--display); font-size:22px; font-weight:700; line-height:1; margin-bottom:5px; }
+@media(min-width:640px){ .stat-value{ font-size:26px; } }
+.stat-sub { font-size:11px; color:var(--muted); font-family:var(--mono); }
+.stat-icon { position:absolute; top:14px; right:14px; font-size:20px; opacity:.2; }
+@media(min-width:640px){ .stat-icon{ top:18px; right:18px; font-size:22px; opacity:.25; } }
 
-/* TABLE */
+/* ===== TABLE CARD ===== */
 .table-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-.table-header { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.table-title { font-family:var(--display); font-size:15px; font-weight:700; }
+.table-header {
+  padding:14px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+}
+.table-header-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; gap:8px; }
+.table-title { font-family:var(--display); font-size:14px; font-weight:700; }
 .refresh-btn {
-  padding:7px 14px; background:var(--green-dim); border:1px solid rgba(0,214,50,0.2);
+  padding:7px 13px; background:var(--green-dim); border:1px solid rgba(0,214,50,0.2);
   border-radius:8px; color:var(--green); font-size:12px; font-weight:500;
-  cursor:pointer; transition:all .2s; font-family:var(--mono);
+  cursor:pointer; transition:all .2s; font-family:var(--mono); white-space:nowrap;
 }
 .refresh-btn:hover { background:rgba(0,214,50,0.2); }
-table { width:100%; border-collapse:collapse; }
-th { padding:11px 16px; text-align:left; font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid var(--border); font-family:var(--mono); }
-td { padding:13px 16px; font-size:13px; border-bottom:1px solid var(--border); }
+
+/* ===== FILTER TABS ===== */
+.filter-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+.filter-tab {
+  padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border2); background:none; color:var(--muted);
+  font-family:var(--mono); transition:all .15s; text-transform:uppercase; letter-spacing:.04em;
+}
+.filter-tab:hover { border-color:var(--border); color:var(--text); }
+.filter-tab.active { background:var(--green-dim); border-color:rgba(0,214,50,0.3); color:var(--green); }
+.filter-tab.tab-settled.active { background:var(--green-dim); border-color:rgba(0,214,50,0.3); color:var(--green); }
+.filter-tab.tab-new.active { background:rgba(61,142,248,0.12); border-color:rgba(61,142,248,0.3); color:var(--blue); }
+.filter-tab.tab-expired.active { background:rgba(107,116,144,0.12); border-color:rgba(107,116,144,0.2); color:var(--muted); }
+
+/* ===== TABLE ===== */
+.table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+table { width:100%; border-collapse:collapse; min-width:480px; }
+th {
+  padding:10px 14px; text-align:left; font-size:10px; font-weight:600;
+  color:var(--muted); text-transform:uppercase; letter-spacing:.08em;
+  border-bottom:1px solid var(--border); font-family:var(--mono); white-space:nowrap;
+}
+td { padding:12px 14px; font-size:12px; border-bottom:1px solid var(--border); }
+@media(min-width:640px){ td{ font-size:13px; } }
 tr:last-child td { border-bottom:none; }
 tr:hover td { background:rgba(255,255,255,0.02); }
-.mono { font-family:var(--mono); font-size:12px; }
+.mono { font-family:var(--mono); font-size:11px; }
 .badge {
   display:inline-flex; align-items:center; gap:5px; padding:3px 9px;
-  border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);
+  border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.05em; font-family:var(--mono); white-space:nowrap;
 }
 .badge-settled { background:rgba(0,214,50,0.12); color:var(--green); }
 .badge-new { background:rgba(61,142,248,0.12); color:var(--blue); }
 .badge-expired { background:rgba(107,116,144,0.12); color:var(--muted); }
-.badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
-.empty-state { padding:48px; text-align:center; color:var(--muted); font-size:13px; }
-.empty-icon { font-size:36px; margin-bottom:12px; opacity:.4; }
+.badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.empty-state { padding:40px; text-align:center; color:var(--muted); font-size:13px; }
+.empty-icon { font-size:32px; margin-bottom:10px; opacity:.4; }
 
-/* CHART */
-.chart-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:28px; }
-.chart-title { font-family:var(--display); font-size:15px; font-weight:700; margin-bottom:16px; }
-.bar-chart { display:flex; align-items:flex-end; gap:8px; height:100px; }
-.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+/* ===== SETTLE BUTTON ===== */
+.settle-btn {
+  padding:4px 10px; background:var(--green-dim); border:1px solid rgba(0,214,50,0.2);
+  border-radius:6px; color:var(--green); font-size:10px; font-weight:600;
+  cursor:pointer; transition:all .15s; font-family:var(--mono); white-space:nowrap;
+}
+.settle-btn:hover { background:rgba(0,214,50,0.25); }
+.settle-btn:disabled { opacity:.4; cursor:default; }
+
+/* ===== CHART ===== */
+.chart-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:20px; }
+.chart-title { font-family:var(--display); font-size:14px; font-weight:700; margin-bottom:14px; }
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:90px; }
+.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .bar { width:100%; background:var(--green-dim); border-radius:4px 4px 0 0; transition:all .3s; min-height:4px; border:1px solid rgba(0,214,50,0.15); }
 .bar.has-data { background:linear-gradient(180deg, var(--green) 0%, rgba(0,214,50,0.4) 100%); box-shadow:0 0 8px rgba(0,214,50,0.3); }
 .bar-label { font-size:9px; color:var(--muted); font-family:var(--mono); }
 
-/* SETTINGS */
-.settings-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:16px; }
-.settings-title { font-family:var(--display); font-size:15px; font-weight:700; margin-bottom:18px; }
-.setting-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+/* ===== SETTINGS ===== */
+.settings-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:14px; }
+.settings-title { font-family:var(--display); font-size:14px; font-weight:700; margin-bottom:16px; }
+.setting-row { display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--border); gap:12px; }
 .setting-row:last-child { border-bottom:none; }
 .setting-label { font-size:13px; font-weight:500; }
 .setting-desc { font-size:11px; color:var(--muted); margin-top:2px; }
-.setting-val { font-family:var(--mono); font-size:12px; color:var(--green); background:var(--green-dim); padding:4px 10px; border-radius:6px; }
+.setting-val { font-family:var(--mono); font-size:11px; color:var(--green); background:var(--green-dim); padding:4px 10px; border-radius:6px; white-space:nowrap; flex-shrink:0; }
 
-/* LOADING */
+/* ===== TOAST ===== */
+.toast {
+  position:fixed; bottom:24px; right:16px; background:var(--card); border:1px solid var(--border2);
+  border-radius:10px; padding:12px 16px; font-size:13px; z-index:999;
+  box-shadow:0 8px 32px rgba(0,0,0,.4); transform:translateY(80px); opacity:0;
+  transition:all .3s cubic-bezier(.4,0,.2,1); max-width:280px;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-color:rgba(0,214,50,0.3); color:var(--green); }
+.toast.error { border-color:rgba(255,71,87,0.3); color:var(--red); }
+
+/* ===== MISC ===== */
 .loading { text-align:center; padding:32px; color:var(--muted); font-size:13px; }
 .spinner { width:24px; height:24px; border:2px solid var(--border2); border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 10px; }
 @keyframes spin { to { transform:rotate(360deg); } }
-
-/* SCROLLBAR */
-::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:10px; }
-
-/* FADE IN */
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 .fade-in { animation:fadeIn .3s ease forwards; }
+.mb-20 { margin-bottom:20px; }
+
+/* ===== MOBILE ===== */
+@media(max-width:767px){
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-close { display:flex; align-items:center; justify-content:center; }
+  .main { margin-left:0; }
+  .hamburger { display:flex; align-items:center; justify-content:center; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+}
 </style>
 </head>
 <body>
@@ -220,13 +299,18 @@ tr:hover td { background:rgba(255,255,255,0.02); }
 
 <!-- ADMIN -->
 <div id="adminScreen">
-  <div class="sidebar">
+  <!-- Mobile overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-icon">$</div>
-      <div>
+      <div style="flex:1">
         <div class="brand-text">CashApp Pay</div>
         <div class="brand-sub">admin panel</div>
       </div>
+      <button class="sidebar-close" onclick="closeSidebar()">✕</button>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-item active" onclick="showSection('dashboard',this)"><span class="nav-icon">⚡</span>Dashboard</button>
@@ -240,9 +324,13 @@ tr:hover td { background:rgba(255,255,255,0.02); }
     </div>
   </div>
 
+  <!-- Main -->
   <div class="main">
     <div class="topbar">
-      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()">☰</button>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+      </div>
       <div class="topbar-right">
         <div class="status-dot"></div>
         <div class="status-text">Live</div>
@@ -254,13 +342,33 @@ tr:hover td { background:rgba(255,255,255,0.02); }
       <!-- DASHBOARD -->
       <div class="section active fade-in" id="sec-dashboard">
         <div class="stats-grid" id="statsGrid">
-          <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="s-revenue">$0</div><div class="stat-sub">USD</div><div class="stat-icon">💰</div></div>
-          <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Total Payments</div><div class="stat-value" id="s-total">0</div><div class="stat-sub">invoices</div><div class="stat-icon">📄</div></div>
-          <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Settled</div><div class="stat-value" id="s-settled">0</div><div class="stat-sub">confirmed</div><div class="stat-icon">✅</div></div>
-          <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Pending</div><div class="stat-value" id="s-pending">0</div><div class="stat-sub">awaiting</div><div class="stat-icon">⏳</div></div>
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value" id="s-revenue">$0</div>
+            <div class="stat-sub">USD</div>
+            <div class="stat-icon">💰</div>
+          </div>
+          <div class="stat-card" style="--accent:var(--blue)">
+            <div class="stat-label">Total Payments</div>
+            <div class="stat-value" id="s-total">0</div>
+            <div class="stat-sub">invoices</div>
+            <div class="stat-icon">📄</div>
+          </div>
+          <div class="stat-card" style="--accent:var(--green)">
+            <div class="stat-label">Settled</div>
+            <div class="stat-value" id="s-settled">0</div>
+            <div class="stat-sub">confirmed</div>
+            <div class="stat-icon">✅</div>
+          </div>
+          <div class="stat-card" style="--accent:var(--yellow)">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" id="s-pending">0</div>
+            <div class="stat-sub">awaiting</div>
+            <div class="stat-icon">⏳</div>
+          </div>
         </div>
 
-        <div class="chart-card">
+        <div class="chart-card mb-20">
           <div class="chart-title">Revenue — Last 7 Days</div>
           <div class="bar-chart" id="barChart"></div>
         </div>
@@ -270,7 +378,9 @@ tr:hover td { background:rgba(255,255,255,0.02); }
             <div class="table-title">Recent Payments</div>
             <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
           </div>
-          <div id="recentTable"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+          <div class="table-scroll" id="recentTable">
+            <div class="loading"><div class="spinner"></div>Loading...</div>
+          </div>
         </div>
       </div>
 
@@ -278,19 +388,50 @@ tr:hover td { background:rgba(255,255,255,0.02); }
       <div class="section fade-in" id="sec-payments">
         <div class="table-card">
           <div class="table-header">
-            <div class="table-title">All Payments</div>
+            <div class="table-header-left">
+              <div class="table-title">All Payments</div>
+              <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-filter="all" onclick="setFilter('all',this)">All</button>
+                <button class="filter-tab tab-new" data-filter="new" onclick="setFilter('new',this)">New</button>
+                <button class="filter-tab tab-settled" data-filter="settled" onclick="setFilter('settled',this)">Settled</button>
+                <button class="filter-tab tab-expired" data-filter="expired" onclick="setFilter('expired',this)">Expired</button>
+              </div>
+            </div>
             <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
           </div>
-          <div id="allPaymentsTable"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+          <div class="table-scroll" id="allPaymentsTable">
+            <div class="loading"><div class="spinner"></div>Loading...</div>
+          </div>
         </div>
       </div>
 
       <!-- REVENUE -->
       <div class="section fade-in" id="sec-revenue">
-        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-          <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="r-total">$0</div><div class="stat-sub">settled only</div><div class="stat-icon">💰</div></div>
-          <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Avg Payment</div><div class="stat-value" id="r-avg">$0</div><div class="stat-sub">per invoice</div><div class="stat-icon">📊</div></div>
-          <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Largest</div><div class="stat-value" id="r-max">$0</div><div class="stat-sub">single payment</div><div class="stat-icon">🏆</div></div>
+        <div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value" id="r-total">$0</div>
+            <div class="stat-sub">settled only</div>
+            <div class="stat-icon">💰</div>
+          </div>
+          <div class="stat-card" style="--accent:var(--blue)">
+            <div class="stat-label">Avg Payment</div>
+            <div class="stat-value" id="r-avg">$0</div>
+            <div class="stat-sub">per invoice</div>
+            <div class="stat-icon">📊</div>
+          </div>
+          <div class="stat-card" style="--accent:var(--yellow)">
+            <div class="stat-label">Largest</div>
+            <div class="stat-value" id="r-max">$0</div>
+            <div class="stat-sub">single payment</div>
+            <div class="stat-icon">🏆</div>
+          </div>
+          <div class="stat-card" style="--accent:var(--green)">
+            <div class="stat-label">Settled Count</div>
+            <div class="stat-value" id="r-count">0</div>
+            <div class="stat-sub">transactions</div>
+            <div class="stat-icon">✅</div>
+          </div>
         </div>
         <div class="chart-card">
           <div class="chart-title">Revenue — Last 7 Days</div>
@@ -305,7 +446,9 @@ tr:hover td { background:rgba(255,255,255,0.02); }
             <div class="table-title">Payment Logs</div>
             <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
           </div>
-          <div id="logsTable"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+          <div class="table-scroll" id="logsTable">
+            <div class="loading"><div class="spinner"></div>Loading...</div>
+          </div>
         </div>
       </div>
 
@@ -345,17 +488,33 @@ tr:hover td { background:rgba(255,255,255,0.02); }
         </div>
       </div>
 
-    </div>
-  </div>
-</div>
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /adminScreen -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
 const SUPABASE_URL = "https://pbxpdppibnmtyxfoyydr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo";
 const DEFAULT_PASSWORD = "admin@cashapp2026";
 let allPayments = [];
+let currentFilter = 'all';
 
-// --- AUTH ---
+// ===== MOBILE SIDEBAR =====
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ===== AUTH =====
 function getPassword() { return localStorage.getItem('admin_pass') || DEFAULT_PASSWORD; }
 function doLogin() {
   const val = document.getElementById('passwordInput').value;
@@ -386,7 +545,15 @@ if (sessionStorage.getItem('admin_auth')==='1') {
   loadAll();
 }
 
-// --- NAV ---
+// ===== TOAST =====
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type==='success'?'✓ ':'✕ ') + msg;
+  t.className = 'toast show ' + type;
+  setTimeout(()=>{ t.className='toast'; }, 3000);
+}
+
+// ===== NAV =====
 function showSection(name, btn) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
@@ -394,13 +561,15 @@ function showSection(name, btn) {
   btn.classList.add('active');
   const titles = {dashboard:'Dashboard',payments:'Payments',revenue:'Revenue',logs:'Logs',settings:'Settings'};
   document.getElementById('pageTitle').textContent = titles[name];
+  closeSidebar();
 }
 
-// --- FETCH ---
+// ===== FETCH =====
 async function fetchPayments() {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&order=created_at.desc`, {
     headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
   });
+  if (!res.ok) throw new Error('Fetch failed');
   return await res.json();
 }
 
@@ -413,10 +582,44 @@ async function loadAll() {
     renderRecentTable();
     renderAllPaymentsTable();
     renderLogsTable();
-  } catch(e) { console.error(e); }
+  } catch(e) {
+    console.error(e);
+    showToast('Failed to load data', 'error');
+  }
 }
 
-// --- STATS ---
+// ===== SETTLE PAYMENT IN SUPABASE =====
+async function settlePayment(invoiceId, btnEl) {
+  btnEl.disabled = true;
+  btnEl.textContent = '...';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?invoice_id=eq.${encodeURIComponent(invoiceId)}`, {
+      method:'PATCH',
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body: JSON.stringify({ status:'settled' })
+    });
+    if (res.ok || res.status === 204) {
+      showToast('Payment marked as settled!');
+      await loadAll();
+    } else {
+      const err = await res.json();
+      showToast(err.message || 'Update failed', 'error');
+      btnEl.disabled = false;
+      btnEl.textContent = 'Settle';
+    }
+  } catch(e) {
+    showToast('Network error', 'error');
+    btnEl.disabled = false;
+    btnEl.textContent = 'Settle';
+  }
+}
+
+// ===== STATS =====
 function renderStats() {
   const settled = allPayments.filter(p=>p.status==='settled');
   const pending = allPayments.filter(p=>p.status==='new');
@@ -425,15 +628,15 @@ function renderStats() {
   document.getElementById('s-total').textContent = allPayments.length;
   document.getElementById('s-settled').textContent = settled.length;
   document.getElementById('s-pending').textContent = pending.length;
-  // Revenue section
   const avg = settled.length ? revenue/settled.length : 0;
   const max = settled.length ? Math.max(...settled.map(p=>parseFloat(p.amount||0))) : 0;
   document.getElementById('r-total').textContent = '$'+revenue.toFixed(2);
   document.getElementById('r-avg').textContent = '$'+avg.toFixed(2);
   document.getElementById('r-max').textContent = '$'+max.toFixed(2);
+  document.getElementById('r-count').textContent = settled.length;
 }
 
-// --- CHART ---
+// ===== CHART =====
 function renderChart(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
@@ -442,76 +645,108 @@ function renderChart(elId) {
     const d = new Date(); d.setDate(d.getDate()-i);
     days.push(d.toISOString().slice(0,10));
   }
-  const maxRev = Math.max(1, ...days.map(day => {
-    return allPayments.filter(p=>p.status==='settled'&&p.created_at&&p.created_at.slice(0,10)===day).reduce((a,p)=>a+parseFloat(p.amount||0),0);
-  }));
+  const maxRev = Math.max(1, ...days.map(day =>
+    allPayments.filter(p=>p.status==='settled'&&p.created_at&&p.created_at.slice(0,10)===day)
+      .reduce((a,p)=>a+parseFloat(p.amount||0),0)
+  ));
   el.innerHTML = days.map(day=>{
-    const rev = allPayments.filter(p=>p.status==='settled'&&p.created_at&&p.created_at.slice(0,10)===day).reduce((a,p)=>a+parseFloat(p.amount||0),0);
-    const h = Math.max(4, (rev/maxRev)*90);
+    const rev = allPayments.filter(p=>p.status==='settled'&&p.created_at&&p.created_at.slice(0,10)===day)
+      .reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const h = Math.max(4, (rev/maxRev)*82);
     const label = new Date(day+'T12:00:00').toLocaleDateString('en',{weekday:'short'});
     return `<div class="bar-wrap"><div class="bar${rev>0?' has-data':''}" style="height:${h}px" title="$${rev.toFixed(2)}"></div><div class="bar-label">${label}</div></div>`;
   }).join('');
 }
 
-// --- STATUS BADGE ---
+// ===== HELPERS =====
 function badge(status) {
   const map = { settled:'badge-settled', new:'badge-new', expired:'badge-expired' };
   const cls = map[status]||'badge-expired';
-  return `<span class="badge ${cls}"><span class="badge-dot"></span>${status}</span>`;
+  return `<span class="badge ${cls}"><span class="badge-dot"></span>${status||'unknown'}</span>`;
 }
-
 function fmtDate(d) {
   if (!d) return '—';
   return new Date(d).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 }
-
 function fmtId(id) {
   if (!id) return '—';
-  return id.substring(0,12)+'...';
+  return id.length > 14 ? id.substring(0,12)+'...' : id;
 }
 
-// --- TABLES ---
+// ===== FILTER =====
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderAllPaymentsTable();
+}
+
+function getFilteredPayments() {
+  if (currentFilter === 'all') return allPayments;
+  return allPayments.filter(p => p.status === currentFilter);
+}
+
+// ===== RECENT TABLE =====
 function renderRecentTable() {
   const el = document.getElementById('recentTable');
   const rows = allPayments.slice(0,10);
   if (!rows.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No payments yet</div>`; return; }
-  el.innerHTML = `<table><thead><tr><th>Date</th><th>Invoice</th><th>Amount</th><th>Email</th><th>Status</th></tr></thead><tbody>
+  el.innerHTML = `<table><thead><tr>
+    <th>Date</th><th>Invoice</th><th>Amount</th><th>Status</th>
+  </tr></thead><tbody>
     ${rows.map(p=>`<tr>
       <td class="mono">${fmtDate(p.created_at)}</td>
       <td class="mono">${fmtId(p.invoice_id)}</td>
       <td><strong>$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
-      <td style="color:var(--muted)">${p.customer_email||'—'}</td>
       <td>${badge(p.status)}</td>
     </tr>`).join('')}
   </tbody></table>`;
 }
 
+// ===== ALL PAYMENTS TABLE =====
 function renderAllPaymentsTable() {
   const el = document.getElementById('allPaymentsTable');
-  if (!allPayments.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No payments yet</div>`; return; }
-  el.innerHTML = `<table><thead><tr><th>Date</th><th>Invoice ID</th><th>Amount</th><th>Currency</th><th>Email</th><th>Status</th></tr></thead><tbody>
-    ${allPayments.map(p=>`<tr>
+  const rows = getFilteredPayments();
+  if (!rows.length) {
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">${currentFilter==='settled'?'✅':'📭'}</div>${currentFilter==='settled'?'No settled payments yet':'No payments found'}</div>`;
+    return;
+  }
+  el.innerHTML = `<table><thead><tr>
+    <th>Date</th><th>Invoice ID</th><th>Amount</th><th>Currency</th><th>Email</th><th>Status</th><th>Action</th>
+  </tr></thead><tbody>
+    ${rows.map(p=>`<tr>
       <td class="mono">${fmtDate(p.created_at)}</td>
-      <td class="mono" style="font-size:11px">${p.invoice_id||'—'}</td>
+      <td class="mono" style="font-size:10px;max-width:120px;overflow:hidden;text-overflow:ellipsis">${p.invoice_id||'—'}</td>
       <td><strong>$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
       <td class="mono">${p.currency||'USD'}</td>
-      <td style="color:var(--muted)">${p.customer_email||'—'}</td>
+      <td style="color:var(--muted);font-size:11px">${p.customer_email||'—'}</td>
       <td>${badge(p.status)}</td>
+      <td>${p.status!=='settled'
+        ? `<button class="settle-btn" onclick="settlePayment('${p.invoice_id}',this)">Settle</button>`
+        : `<span style="color:var(--green);font-size:11px;font-family:var(--mono)">✓ done</span>`
+      }</td>
     </tr>`).join('')}
   </tbody></table>`;
 }
 
+// ===== LOGS TABLE =====
 function renderLogsTable() {
   const el = document.getElementById('logsTable');
   if (!allPayments.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No logs yet</div>`; return; }
-  el.innerHTML = `<table><thead><tr><th>Time</th><th>Event</th><th>Invoice</th><th>Amount</th><th>Result</th></tr></thead><tbody>
+  el.innerHTML = `<table><thead><tr>
+    <th>Time</th><th>Event</th><th>Invoice</th><th>Amount</th><th>Result</th>
+  </tr></thead><tbody>
     ${allPayments.map(p=>{
       const event = p.status==='settled' ? '⚡ Payment Settled' : p.status==='new' ? '🔔 Invoice Created' : '⏰ Invoice Expired';
-      const result = p.status==='settled' ? '<span style="color:var(--green)">✓ Success</span>' : p.status==='new' ? '<span style="color:var(--blue)">⏳ Pending</span>' : '<span style="color:var(--muted)">— Expired</span>';
+      const result = p.status==='settled'
+        ? '<span style="color:var(--green)">✓ Success</span>'
+        : p.status==='new'
+        ? '<span style="color:var(--blue)">⏳ Pending</span>'
+        : '<span style="color:var(--muted)">— Expired</span>';
       return `<tr>
         <td class="mono">${fmtDate(p.created_at)}</td>
-        <td>${event}</td>
-        <td class="mono" style="font-size:11px">${fmtId(p.invoice_id)}</td>
+        <td style="font-size:12px">${event}</td>
+        <td class="mono" style="font-size:10px">${fmtId(p.invoice_id)}</td>
         <td><strong>$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
         <td>${result}</td>
       </tr>`;
