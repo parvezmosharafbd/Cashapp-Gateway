@@ -58,9 +58,13 @@ body {
 .amt-btn {
   border: 2px solid #86efac; background: white; color: #111;
   border-radius: 999px; padding: 11px 0; font-size: 15px; font-weight: 700;
-  cursor: pointer; transition: border-color .15s;
+  cursor: pointer; transition: all .15s;
 }
-.amt-btn.selected { border-color: #00D632; }
+.amt-btn.selected { 
+  border-color: #00D632; 
+  background: #00D632; 
+  color: white;
+}
 .show-more-btn {
   width: 100%; background: #dcfce7; color: #16a34a;
   border: none; border-radius: 999px; padding: 11px;
@@ -290,7 +294,7 @@ function selectAmt(btn, val) {
   document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   selectedAmount = val;
-  document.getElementById('customInput').value = '';
+  document.getElementById('customInput').value = val;
 }
 
 function onCustomInput(input) {
