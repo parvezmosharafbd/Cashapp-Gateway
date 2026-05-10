@@ -264,6 +264,10 @@
                 let shortId = invId.substring(0, 16).replace(/(.{4})/g, '$1-').slice(0, -1);
                 document.getElementById('invoiceIdDisplay').innerText = shortId;
 
+                // Cash App Lightning deep link
+                const bolt11Raw = lnUri.toLowerCase().startsWith('lightning:') ? lnUri.slice(10) : lnUri;
+                const cashAppLink = `https://cash.app/launch/lightning/${bolt11Raw}`;
+
                 document.getElementById('qrcode').innerHTML = "";
                 new QRCode(document.getElementById("qrcode"), {
                     text: cashAppLink,
@@ -273,10 +277,6 @@
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
                 });
-
-                // Cash App Lightning deep link
-                const bolt11Raw = rawCode => rawCode.toLowerCase().startsWith('lightning:') ? rawCode.slice(10) : rawCode;
-                const cashAppLink = `https://cash.app/launch/lightning/${bolt11Raw(lnUri)}`;
 
                 document.getElementById('cashAppLink').href = cashAppLink;
                 document.getElementById('payNowBtn').href = cashAppLink;
