@@ -266,7 +266,7 @@
 
                 document.getElementById('qrcode').innerHTML = "";
                 new QRCode(document.getElementById("qrcode"), {
-                    text: lnUri,
+                    text: cashAppLink,
                     width: 180,
                     height: 180,
                     colorDark: "#000000",
@@ -274,8 +274,12 @@
                     correctLevel: QRCode.CorrectLevel.M
                 });
 
-                document.getElementById('cashAppLink').href = lnUri;
-                document.getElementById('payNowBtn').href = lnUri;
+                // Cash App Lightning deep link
+                const bolt11Raw = rawCode => rawCode.toLowerCase().startsWith('lightning:') ? rawCode.slice(10) : rawCode;
+                const cashAppLink = `https://cash.app/launch/lightning/${bolt11Raw(lnUri)}`;
+
+                document.getElementById('cashAppLink').href = cashAppLink;
+                document.getElementById('payNowBtn').href = cashAppLink;
 
                 startTimer(15 * 60); // 15 minutes
                 startPolling(invId, amount);
