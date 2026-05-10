@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — pay-cashapp.shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080a0f;
+  --surface: #0e1117;
+  --card: #131720;
+  --border: #1e2433;
+  --border2: #252d3d;
+  --green: #00d632;
+  --green-dim: rgba(0,214,50,0.12);
+  --green-glow: rgba(0,214,50,0.3);
+  --text: #e8eaf0;
+  --muted: #6b7490;
+  --muted2: #3d4560;
+  --red: #ff4757;
+  --yellow: #ffd32a;
+  --blue: #3d8ef8;
+  --mono: 'DM Mono', monospace;
+  --display: 'Syne', sans-serif;
+  --body: 'DM Sans', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:var(--body); min-height:100vh; overflow-x:hidden; }
+
+/* LOGIN */
+#loginScreen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,214,50,0.08) 0%, transparent 60%);
+}
+.login-box {
+  width:380px; background:var(--surface); border:1px solid var(--border2);
+  border-radius:20px; padding:40px; position:relative; overflow:hidden;
+}
+.login-box::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--green), transparent);
+}
+.login-logo {
+  width:52px; height:52px; background:var(--green); border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--display); font-size:24px; font-weight:800; color:#000;
+  margin:0 auto 24px; box-shadow:0 0 30px var(--green-glow);
+}
+.login-title { font-family:var(--display); font-size:22px; font-weight:700; text-align:center; margin-bottom:6px; }
+.login-sub { color:var(--muted); font-size:13px; text-align:center; margin-bottom:28px; }
+.field-label { font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; display:block; }
+.field-input {
+  width:100%; background:#0a0d13; border:1px solid var(--border2); border-radius:10px;
+  padding:12px 14px; color:var(--text); font-family:var(--mono); font-size:14px;
+  outline:none; transition:border .2s;
+}
+.field-input:focus { border-color:var(--green); }
+.field-wrap { margin-bottom:18px; }
+.login-btn {
+  width:100%; background:var(--green); border:none; border-radius:10px;
+  padding:13px; font-family:var(--display); font-size:15px; font-weight:700;
+  color:#000; cursor:pointer; transition:all .2s; margin-top:8px;
+  box-shadow:0 0 20px var(--green-glow);
+}
+.login-btn:hover { background:#00f03a; transform:translateY(-1px); }
+.login-error { color:var(--red); font-size:12px; text-align:center; margin-top:12px; display:none; }
+
+/* ADMIN */
+#adminScreen { display:none; }
+
+/* SIDEBAR */
+.sidebar {
+  position:fixed; left:0; top:0; bottom:0; width:220px;
+  background:var(--surface); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; z-index:100;
+}
+.sidebar-brand {
+  padding:24px 20px; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid var(--border);
+}
+.brand-icon {
+  width:36px; height:36px; background:var(--green); border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--display); font-size:17px; font-weight:800; color:#000;
+  box-shadow:0 0 15px var(--green-glow); flex-shrink:0;
+}
+.brand-text { font-family:var(--display); font-size:13px; font-weight:700; line-height:1.2; }
+.brand-sub { font-size:10px; color:var(--muted); font-weight:400; font-family:var(--mono); }
+.sidebar-nav { flex:1; padding:16px 12px; display:flex; flex-direction:column; gap:4px; }
+.nav-item {
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border-radius:9px; cursor:pointer; transition:all .15s;
+  font-size:13px; font-weight:500; color:var(--muted); border:none; background:none;
+  width:100%; text-align:left;
+}
+.nav-item:hover { background:var(--card); color:var(--text); }
+.nav-item.active { background:var(--green-dim); color:var(--green); }
+.nav-icon { font-size:16px; width:20px; text-align:center; }
+.sidebar-footer { padding:16px 12px; border-top:1px solid var(--border); }
+.logout-btn {
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border-radius:9px; cursor:pointer; font-size:13px; font-weight:500;
+  color:var(--red); background:none; border:none; width:100%; transition:all .15s;
+}
+.logout-btn:hover { background:rgba(255,71,87,0.1); }
+
+/* MAIN */
+.main { margin-left:220px; min-height:100vh; }
+.topbar {
+  padding:20px 28px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--surface); position:sticky; top:0; z-index:50;
+}
+.page-title { font-family:var(--display); font-size:20px; font-weight:700; }
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.status-dot { width:8px; height:8px; background:var(--green); border-radius:50%; box-shadow:0 0 8px var(--green); animation:pulse 2s infinite; }
+.status-text { font-size:12px; color:var(--muted); font-family:var(--mono); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.content { padding:28px; }
+
+/* SECTION */
+.section { display:none; }
+.section.active { display:block; }
+
+/* STATS GRID */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:20px; position:relative; overflow:hidden; transition:border .2s;
+}
+.stat-card:hover { border-color:var(--border2); }
+.stat-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--accent, var(--green)); opacity:.6;
+}
+.stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:500; margin-bottom:10px; }
+.stat-value { font-family:var(--display); font-size:26px; font-weight:700; line-height:1; margin-bottom:6px; }
+.stat-sub { font-size:12px; color:var(--muted); font-family:var(--mono); }
+.stat-icon { position:absolute; top:18px; right:18px; font-size:22px; opacity:.25; }
+
+/* TABLE */
+.table-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.table-header { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.table-title { font-family:var(--display); font-size:15px; font-weight:700; }
+.refresh-btn {
+  padding:7px 14px; background:var(--green-dim); border:1px solid rgba(0,214,50,0.2);
+  border-radius:8px; color:var(--green); font-size:12px; font-weight:500;
+  cursor:pointer; transition:all .2s; font-family:var(--mono);
+}
+.refresh-btn:hover { background:rgba(0,214,50,0.2); }
+table { width:100%; border-collapse:collapse; }
+th { padding:11px 16px; text-align:left; font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid var(--border); font-family:var(--mono); }
+td { padding:13px 16px; font-size:13px; border-bottom:1px solid var(--border); }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,0.02); }
+.mono { font-family:var(--mono); font-size:12px; }
+.badge {
+  display:inline-flex; align-items:center; gap:5px; padding:3px 9px;
+  border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);
+}
+.badge-settled { background:rgba(0,214,50,0.12); color:var(--green); }
+.badge-new { background:rgba(61,142,248,0.12); color:var(--blue); }
+.badge-expired { background:rgba(107,116,144,0.12); color:var(--muted); }
+.badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.empty-state { padding:48px; text-align:center; color:var(--muted); font-size:13px; }
+.empty-icon { font-size:36px; margin-bottom:12px; opacity:.4; }
+
+/* CHART */
+.chart-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:28px; }
+.chart-title { font-family:var(--display); font-size:15px; font-weight:700; margin-bottom:16px; }
+.bar-chart { display:flex; align-items:flex-end; gap:8px; height:100px; }
+.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+.bar { width:100%; background:var(--green-dim); border-radius:4px 4px 0 0; transition:all .3s; min-height:4px; border:1px solid rgba(0,214,50,0.15); }
+.bar.has-data { background:linear-gradient(180deg, var(--green) 0%, rgba(0,214,50,0.4) 100%); box-shadow:0 0 8px rgba(0,214,50,0.3); }
+.bar-label { font-size:9px; color:var(--muted); font-family:var(--mono); }
+
+/* SETTINGS */
+.settings-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:16px; }
+.settings-title { font-family:var(--display); font-size:15px; font-weight:700; margin-bottom:18px; }
+.setting-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+.setting-row:last-child { border-bottom:none; }
+.setting-label { font-size:13px; font-weight:500; }
+.setting-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.setting-val { font-family:var(--mono); font-size:12px; color:var(--green); background:var(--green-dim); padding:4px 10px; border-radius:6px; }
+
+/* LOADING */
+.loading { text-align:center; padding:32px; color:var(--muted); font-size:13px; }
+.spinner { width:24px; height:24px; border:2px solid var(--border2); border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 10px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:10px; }
+
+/* FADE IN */
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.fade-in { animation:fadeIn .3s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">$</div>
+    <div class="login-title">Admin Access</div>
+    <div class="login-sub">pay-cashapp.shop</div>
+    <div class="field-wrap">
+      <label class="field-label">Password</label>
+      <input type="password" class="field-input" id="passwordInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen">
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">$</div>
+      <div>
+        <div class="brand-text">CashApp Pay</div>
+        <div class="brand-sub">admin panel</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('dashboard',this)"><span class="nav-icon">⚡</span>Dashboard</button>
+      <button class="nav-item" onclick="showSection('payments',this)"><span class="nav-icon">💳</span>Payments</button>
+      <button class="nav-item" onclick="showSection('revenue',this)"><span class="nav-icon">📈</span>Revenue</button>
+      <button class="nav-item" onclick="showSection('logs',this)"><span class="nav-icon">🔔</span>Logs</button>
+      <button class="nav-item" onclick="showSection('settings',this)"><span class="nav-icon">⚙️</span>Settings</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()"><span>🚪</span> Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="status-dot"></div>
+        <div class="status-text">Live</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="section active fade-in" id="sec-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="s-revenue">$0</div><div class="stat-sub">USD</div><div class="stat-icon">💰</div></div>
+          <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Total Payments</div><div class="stat-value" id="s-total">0</div><div class="stat-sub">invoices</div><div class="stat-icon">📄</div></div>
+          <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Settled</div><div class="stat-value" id="s-settled">0</div><div class="stat-sub">confirmed</div><div class="stat-icon">✅</div></div>
+          <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Pending</div><div class="stat-value" id="s-pending">0</div><div class="stat-sub">awaiting</div><div class="stat-icon">⏳</div></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">Revenue — Last 7 Days</div>
+          <div class="bar-chart" id="barChart"></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Recent Payments</div>
+            <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+          </div>
+          <div id="recentTable"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="section fade-in" id="sec-payments">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">All Payments</div>
+            <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+          </div>
+          <div id="allPaymentsTable"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- REVENUE -->
+      <div class="section fade-in" id="sec-revenue">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="r-total">$0</div><div class="stat-sub">settled only</div><div class="stat-icon">💰</div></div>
+          <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Avg Payment</div><div class="stat-value" id="r-avg">$0</div><div class="stat-sub">per invoice</div><div class="stat-icon">📊</div></div>
+          <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Largest</div><div class="stat-value" id="r-max">$0</div><div class="stat-sub">single payment</div><div class="stat-icon">🏆</div></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Revenue — Last 7 Days</div>
+          <div class="bar-chart" id="barChart2"></div>
+        </div>
+      </div>
+
+      <!-- LOGS -->
+      <div class="section fade-in" id="sec-logs">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Payment Logs</div>
+            <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+          </div>
+          <div id="logsTable"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="section fade-in" id="sec-settings">
+        <div class="settings-card">
+          <div class="settings-title">System Info</div>
+          <div class="setting-row">
+            <div><div class="setting-label">Website</div><div class="setting-desc">Payment page URL</div></div>
+            <div class="setting-val">pay-cashapp.shop</div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Network</div><div class="setting-desc">Payment method</div></div>
+            <div class="setting-val">⚡ Lightning</div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Database</div><div class="setting-desc">Supabase PostgreSQL</div></div>
+            <div class="setting-val">🟢 Connected</div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">BTCPay Server</div><div class="setting-desc">Payment processor</div></div>
+            <div class="setting-val">btcpay684158.lndyn.com</div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Webhook</div><div class="setting-desc">payment-success function</div></div>
+            <div class="setting-val">🟢 Active</div>
+          </div>
+        </div>
+        <div class="settings-card">
+          <div class="settings-title">Change Admin Password</div>
+          <div class="field-wrap" style="margin-bottom:12px">
+            <label class="field-label">New Password</label>
+            <input type="password" class="field-input" id="newPass" placeholder="Enter new password">
+          </div>
+          <button class="refresh-btn" style="padding:10px 20px;font-size:13px" onclick="changePassword()">Update Password</button>
+          <div id="passMsg" style="font-size:12px;margin-top:10px;color:var(--green);display:none">✓ Password updated!</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://pbxpdppibnmtyxfoyydr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo";
+const DEFAULT_PASSWORD = "admin@cashapp2026";
+let allPayments = [];
+
+// --- AUTH ---
+function getPassword() { return localStorage.getItem('admin_pass') || DEFAULT_PASSWORD; }
+function doLogin() {
+  const val = document.getElementById('passwordInput').value;
+  if (val === getPassword()) {
+    sessionStorage.setItem('admin_auth','1');
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminScreen').style.display='block';
+    loadAll();
+  } else {
+    document.getElementById('loginError').style.display='block';
+  }
+}
+function doLogout() {
+  sessionStorage.removeItem('admin_auth');
+  location.reload();
+}
+function changePassword() {
+  const np = document.getElementById('newPass').value;
+  if (!np) return;
+  localStorage.setItem('admin_pass', np);
+  document.getElementById('passMsg').style.display='block';
+  document.getElementById('newPass').value='';
+  setTimeout(()=>document.getElementById('passMsg').style.display='none',3000);
+}
+if (sessionStorage.getItem('admin_auth')==='1') {
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminScreen').style.display='block';
+  loadAll();
+}
+
+// --- NAV ---
+function showSection(name, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  const titles = {dashboard:'Dashboard',payments:'Payments',revenue:'Revenue',logs:'Logs',settings:'Settings'};
+  document.getElementById('pageTitle').textContent = titles[name];
+}
+
+// --- FETCH ---
+async function fetchPayments() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&order=created_at.desc`, {
+    headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+  });
+  return await res.json();
+}
+
+async function loadAll() {
+  try {
+    allPayments = await fetchPayments();
+    renderStats();
+    renderChart('barChart');
+    renderChart('barChart2');
+    renderRecentTable();
+    renderAllPaymentsTable();
+    renderLogsTable();
+  } catch(e) { console.error(e); }
+}
+
+// --- STATS ---
+function renderStats() {
+  const settled = allPayments.filter(p=>p.status==='settled');
+  const pending = allPayments.filter(p=>p.status==='new');
+  const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
+  document.getElementById('s-revenue').textContent = '$'+revenue.toFixed(2);
+  document.getElementById('s-total').textContent = allPayments.length;
+  document.getElementById('s-settled').textContent = settled.length;
+  document.getElementById('s-pending').textContent = pending.length;
+  // Revenue section
+  const avg = settled.length ? revenue/settled.length : 0;
+  const max = settled.length ? Math.max(...settled.map(p=>parseFloat(p.amount||0))) : 0;
+  document.getElementById('r-total').textContent = '$'+revenue.toFixed(2);
+  document.getElementById('r-avg').textContent = '$'+avg.toFixed(2);
+  document.getElementById('r-max').textContent = '$'+max.toFixed(2);
+}
+
+// --- CHART ---
+function renderChart(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const days = [];
+  for (let i=6;i>=0;i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  const maxRev = Math.max(1, ...days.map(day => {
+    return allPayments.filter(p=>p.status==='settled'&&p.created_at&&p.created_at.slice(0,10)===day).reduce((a,p)=>a+parseFloat(p.amount||0),0);
+  }));
+  el.innerHTML = days.map(day=>{
+    const rev = allPayments.filter(p=>p.status==='settled'&&p.created_at&&p.created_at.slice(0,10)===day).reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const h = Math.max(4, (rev/maxRev)*90);
+    const label = new Date(day+'T12:00:00').toLocaleDateString('en',{weekday:'short'});
+    return `<div class="bar-wrap"><div class="bar${rev>0?' has-data':''}" style="height:${h}px" title="$${rev.toFixed(2)}"></div><div class="bar-label">${label}</div></div>`;
+  }).join('');
+}
+
+// --- STATUS BADGE ---
+function badge(status) {
+  const map = { settled:'badge-settled', new:'badge-new', expired:'badge-expired' };
+  const cls = map[status]||'badge-expired';
+  return `<span class="badge ${cls}"><span class="badge-dot"></span>${status}</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function fmtId(id) {
+  if (!id) return '—';
+  return id.substring(0,12)+'...';
+}
+
+// --- TABLES ---
+function renderRecentTable() {
+  const el = document.getElementById('recentTable');
+  const rows = allPayments.slice(0,10);
+  if (!rows.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No payments yet</div>`; return; }
+  el.innerHTML = `<table><thead><tr><th>Date</th><th>Invoice</th><th>Amount</th><th>Email</th><th>Status</th></tr></thead><tbody>
+    ${rows.map(p=>`<tr>
+      <td class="mono">${fmtDate(p.created_at)}</td>
+      <td class="mono">${fmtId(p.invoice_id)}</td>
+      <td><strong>$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
+      <td style="color:var(--muted)">${p.customer_email||'—'}</td>
+      <td>${badge(p.status)}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function renderAllPaymentsTable() {
+  const el = document.getElementById('allPaymentsTable');
+  if (!allPayments.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No payments yet</div>`; return; }
+  el.innerHTML = `<table><thead><tr><th>Date</th><th>Invoice ID</th><th>Amount</th><th>Currency</th><th>Email</th><th>Status</th></tr></thead><tbody>
+    ${allPayments.map(p=>`<tr>
+      <td class="mono">${fmtDate(p.created_at)}</td>
+      <td class="mono" style="font-size:11px">${p.invoice_id||'—'}</td>
+      <td><strong>$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
+      <td class="mono">${p.currency||'USD'}</td>
+      <td style="color:var(--muted)">${p.customer_email||'—'}</td>
+      <td>${badge(p.status)}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function renderLogsTable() {
+  const el = document.getElementById('logsTable');
+  if (!allPayments.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No logs yet</div>`; return; }
+  el.innerHTML = `<table><thead><tr><th>Time</th><th>Event</th><th>Invoice</th><th>Amount</th><th>Result</th></tr></thead><tbody>
+    ${allPayments.map(p=>{
+      const event = p.status==='settled' ? '⚡ Payment Settled' : p.status==='new' ? '🔔 Invoice Created' : '⏰ Invoice Expired';
+      const result = p.status==='settled' ? '<span style="color:var(--green)">✓ Success</span>' : p.status==='new' ? '<span style="color:var(--blue)">⏳ Pending</span>' : '<span style="color:var(--muted)">— Expired</span>';
+      return `<tr>
+        <td class="mono">${fmtDate(p.created_at)}</td>
+        <td>${event}</td>
+        <td class="mono" style="font-size:11px">${fmtId(p.invoice_id)}</td>
+        <td><strong>$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
+        <td>${result}</td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+</script>
+</body>
+</html>
