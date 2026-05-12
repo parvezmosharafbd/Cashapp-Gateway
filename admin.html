@@ -320,8 +320,8 @@ function renderRecentTable(){
   const el = document.getElementById('recentTable');
   const rows = allPayments.slice(0,10);
   if(!rows.length){ el.innerHTML=`<div class="empty-state">No payments yet</div>`; return; }
-  el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Invoice</th><th>Amount</th><th>Status</th></tr></thead><tbody>
-    ${rows.map(p=>`<tr><td class="mono">${formatDateTime(p.created_at)}</td><td class="mono">${p.invoice_id.substring(0,8)}...</td><td>$${parseFloat(p.amount).toFixed(2)}</td><td>${badge(p.status)}</td></tr>`).join('')}
+  el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Amount</th><th>Location</th><th>Status</th></tr></thead><tbody>
+    ${rows.map(p=>`<tr><td class="mono">${formatDateTime(p.created_at)}</td><td>$${parseFloat(p.amount).toFixed(2)}</td><td><span style="font-size:11px;color:var(--muted)">${p.city || '...'}, ${p.country || '...'}</span></td><td>${badge(p.status)}</td></tr>`).join('')}
   </tbody></table>`;
 }
 
@@ -329,8 +329,8 @@ function renderAllPaymentsTable(){
   const el = document.getElementById('allPaymentsTable');
   const rows = currentFilter === 'all' ? allPayments : allPayments.filter(p=>p.status===currentFilter);
   if(!rows.length){ el.innerHTML=`<div class="empty-state">No payments found</div>`; return; }
-  el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Invoice ID</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>
-    ${rows.map(p=>`<tr><td class="mono">${formatDateTime(p.created_at)}</td><td class="mono">${p.invoice_id.substring(0,12)}...</td><td>$${parseFloat(p.amount).toFixed(2)}</td><td>${badge(p.status)}</td><td>${p.status!=='settled'?`<button class="settle-btn" onclick="settlePayment('${p.invoice_id}',this)">Settle</button>`:'✓'}</td></tr>`).join('')}
+  el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Invoice ID</th><th>Amount</th><th>Location</th><th>Status</th><th>Action</th></tr></thead><tbody>
+    ${rows.map(p=>`<tr><td class="mono">${formatDateTime(p.created_at)}</td><td class="mono">${p.invoice_id.substring(0,12)}...</td><td>$${parseFloat(p.amount).toFixed(2)}</td><td><span style="font-size:11px;color:var(--muted)">${p.city || '...'}, ${p.country || '...'}</span></td><td>${badge(p.status)}</td><td>${p.status!=='settled'?`<button class="settle-btn" onclick="settlePayment('${p.invoice_id}',this)">Settle</button>`:'✓'}</td></tr>`).join('')}
   </tbody></table>`;
 }
 </script>
