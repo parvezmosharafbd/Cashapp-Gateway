@@ -193,6 +193,10 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
             <div class="stat-label">Pending</div>
             <div class="stat-value" id="s-pending">0</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-label">Available Balance</div>
+            <div class="stat-value" id="s-available">$0.00</div>
+          </div>
         </div>
 
         <div class="chart-card">
@@ -373,6 +377,21 @@ function renderStats(){
   document.getElementById('s-total').textContent = allPayments.length;
   document.getElementById('s-settled').textContent = settled.length;
   document.getElementById('s-pending').textContent = allPayments.filter(p=>p.status==='new').length;
+  updateAvailableBalance();
+}
+
+async function updateAvailableBalance(){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+      headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const withdrawals = await res.json();
+    const settled = allPayments.filter(p=>p.status==='settled');
+    const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const withdrawn = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
+    const balance = revenue - withdrawn;
+    document.getElementById('s-available').textContent = '$'+balance.toFixed(2);
+  } catch(e){ console.error(e); }
 }
 
 function renderChart(elId){
