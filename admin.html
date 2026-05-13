@@ -373,7 +373,7 @@ async function submitWithdraw(){
     const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
       method: 'POST',
       headers: { 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type':'application/json' },
-      body: JSON.stringify({ amount: amount, address, source: SITE_IDENTIFIERS[0], status: 'completed', fee: fee })
+      body: JSON.stringify({ amount: amount, address, source: SITE_IDENTIFIERS[0], status: 'completed' })
     });
     if(res.ok){
       alert('Withdrawal request submitted!');
@@ -428,7 +428,7 @@ async function updateAvailableBalance(){
 }
 
 function calculateWithdrawalFees(amount){
-  return Math.floor(amount / 1000) * 5;
+  return (amount / 1000) * 5;
 }
 
 function renderChart(elId){
@@ -483,7 +483,7 @@ function renderWithdrawalHistory(data){
   if(!data.length){ el.innerHTML=`<div class="empty-state">No withdrawals yet</div>`; return; }
   el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Amount</th><th>Fee</th><th>Net</th><th>Address</th><th>Status</th></tr></thead><tbody>
     ${data.map(w=>{
-      const fee = w.fee || 0;
+      const fee = calculateWithdrawalFees(parseFloat(w.amount));
       const net = parseFloat(w.amount) - fee;
       return `<tr><td class="mono">${formatDateTime(w.created_at)}</td><td>$${parseFloat(w.amount).toFixed(2)}</td><td>$${fee.toFixed(2)}</td><td>$${net.toFixed(2)}</td><td class="mono">${w.address.substring(0,10)}...</td><td>${badge(w.status)}</td></tr>`;
     }).join('')}
