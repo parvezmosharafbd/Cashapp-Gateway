@@ -88,6 +88,15 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
 .badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
 .settle-btn{padding:4px 10px;background:var(--green-dim);border:1px solid rgba(0,214,50,0.2);border-radius:6px;color:var(--green);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--mono)}
 
+/* WITHDRAW FORM */
+.withdraw-form{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;max-width:500px}
+.withdraw-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:16px}
+.withdraw-field{margin-bottom:16px}
+.withdraw-input{width:100%;background:#0a0d13;border:1px solid var(--border2);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:14px;outline:none}
+.withdraw-input:focus{border-color:var(--green)}
+.withdraw-btn{background:var(--green);border:none;border-radius:10px;padding:12px 24px;font-family:var(--display);font-size:14px;font-weight:700;color:#000;cursor:pointer;transition:all .2s}
+.withdraw-btn:hover{background:#00f03a;transform:translateY(-1px)}
+
 /* MOBILE RESPONSIVE FIXES */
 @media(max-width:850px){
   .sidebar{transform:translateX(-100%)}
@@ -141,6 +150,9 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
       </button>
       <button class="nav-item" onclick="showSection('payments',this)">
         <span class="nav-icon">💳</span> Payments
+      </button>
+      <button class="nav-item" onclick="showSection('withdraw',this)">
+        <span class="nav-icon">🏦</span> Withdraw
       </button>
     </div>
     <div class="sidebar-footer">
@@ -213,6 +225,33 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
           <div class="table-scroll" id="allPaymentsTable"></div>
         </div>
       </div>
+
+      <div id="sec-withdraw" class="section">
+        <div class="withdraw-form">
+          <h2 class="withdraw-title">Request Withdrawal</h2>
+          <div style="margin-bottom: 20px; padding: 15px; background: var(--green-dim); border-radius: 10px; border: 1px solid rgba(0,214,50,0.2)">
+            <span style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px">Available Balance</span>
+            <span id="withdraw-balance" style="font-family: var(--display); font-size: 24px; font-weight: 700; color: var(--green)">$0.00</span>
+          </div>
+          <div class="withdraw-field">
+            <span class="field-label">AMOUNT ($)</span>
+            <input type="number" id="withdraw-amount" class="withdraw-input" placeholder="0.00">
+          </div>
+          <div class="withdraw-field">
+            <span class="field-label">BTC ADDRESS</span>
+            <input type="text" id="withdraw-address" class="withdraw-input" placeholder="bc1q...">
+          </div>
+          <button class="withdraw-btn" onclick="submitWithdraw()">Request Withdraw</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Withdrawal History</div>
+            <button class="refresh-btn" onclick="loadWithdrawals()">Refresh</button>
+          </div>
+          <div class="table-scroll" id="withdrawHistoryTable"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -253,6 +292,7 @@ function showSection(name,btn){
   btn.classList.add('active');
   document.getElementById('pageTitle').textContent = name.charAt(0).toUpperCase() + name.slice(1);
   closeSidebar();
+  if(name === 'withdraw') loadWithdrawals();
 }
 
 async function loadAll(){
@@ -264,6 +304,36 @@ async function loadAll(){
     allPayments = data.filter(p => (SITE_IDENTIFIERS.includes(p.source) || !p.source));
     renderStats(); renderChart('barChart'); renderRecentTable(); renderAllPaymentsTable();
   } catch(e){ console.error(e); }
+}
+
+async function loadWithdrawals(){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&order=created_at.desc`, {
+      headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const data = await res.json();
+    renderWithdrawalHistory(data);
+  } catch(e){ console.error(e); }
+}
+
+async function submitWithdraw(){
+  const amount = document.getElementById('withdraw-amount').value;
+  const address = document.getElementById('withdraw-address').value;
+  if(!amount || !address){ alert('Please fill all fields'); return; }
+  
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
+      method: 'POST',
+      headers: { 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({ amount: parseFloat(amount), address, source: SITE_IDENTIFIERS[0], status: 'pending' })
+    });
+    if(res.ok){
+      alert('Withdrawal request submitted!');
+      document.getElementById('withdraw-amount').value = '';
+      document.getElementById('withdraw-address').value = '';
+      loadWithdrawals();
+    }
+  } catch(e){ alert('Error submitting request'); }
 }
 
 async function settlePayment(invoiceId, btnEl){
@@ -282,6 +352,7 @@ function renderStats(){
   const settled = allPayments.filter(p=>p.status==='settled');
   const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
   document.getElementById('s-revenue').textContent = '$'+revenue.toFixed(2);
+  document.getElementById('withdraw-balance').textContent = '$'+revenue.toFixed(2);
   document.getElementById('s-total').textContent = allPayments.length;
   document.getElementById('s-settled').textContent = settled.length;
   document.getElementById('s-pending').textContent = allPayments.filter(p=>p.status==='new').length;
@@ -300,7 +371,7 @@ function renderChart(elId){
 }
 
 function badge(status){
-  const map = { settled:'badge-settled', new:'badge-new', expired:'badge-expired' };
+  const map = { settled:'badge-settled', new:'badge-new', expired:'badge-expired', pending:'badge-new', completed:'badge-settled' };
   return `<span class="badge ${map[status]||'badge-expired'}"><span class="badge-dot"></span>${status}</span>`;
 }
 
@@ -331,6 +402,14 @@ function renderAllPaymentsTable(){
   if(!rows.length){ el.innerHTML=`<div class="empty-state">No payments found</div>`; return; }
   el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Invoice ID</th><th>Amount</th><th>Location</th><th>Status</th><th>Action</th></tr></thead><tbody>
     ${rows.map(p=>`<tr><td class="mono">${formatDateTime(p.created_at)}</td><td class="mono">${p.invoice_id.substring(0,12)}...</td><td>$${parseFloat(p.amount).toFixed(2)}</td><td><span style="font-size:11px;color:var(--muted)">${p.city || '...'}, ${p.country || '...'}</span></td><td>${badge(p.status)}</td><td>${p.status!=='settled'?`<button class="settle-btn" onclick="settlePayment('${p.invoice_id}',this)">Settle</button>`:'✓'}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function renderWithdrawalHistory(data){
+  const el = document.getElementById('withdrawHistoryTable');
+  if(!data.length){ el.innerHTML=`<div class="empty-state">No withdrawals yet</div>`; return; }
+  el.innerHTML = `<table><thead><tr><th>Date & Time</th><th>Amount</th><th>Address</th><th>Status</th></tr></thead><tbody>
+    ${data.map(w=>`<tr><td class="mono">${formatDateTime(w.created_at)}</td><td>$${parseFloat(w.amount).toFixed(2)}</td><td class="mono">${w.address.substring(0,10)}...</td><td>${badge(w.status)}</td></tr>`).join('')}
   </tbody></table>`;
 }
 </script>
