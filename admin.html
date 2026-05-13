@@ -347,8 +347,11 @@ async function submitWithdraw(){
       document.getElementById('withdraw-amount').value = '';
       document.getElementById('withdraw-address').value = '';
       loadWithdrawals();
+    } else {
+      const err = await res.json();
+      alert('Error: ' + (err.message || res.statusText));
     }
-  } catch(e){ alert('Error submitting request'); }
+  } catch(e){ alert('Error submitting request: ' + e.message); }
 }
 
 async function settlePayment(invoiceId, btnEl){
