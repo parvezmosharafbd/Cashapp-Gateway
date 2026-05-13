@@ -353,8 +353,7 @@ async function updateBalanceDisplay(){
     const settled = allPayments.filter(p=>p.status==='settled');
     const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
     const withdrawn = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
-    const fees = calculateWithdrawalFees(withdrawn);
-    const balance = revenue - withdrawn - fees;
+    const balance = revenue - withdrawn;
     document.getElementById('withdraw-balance').textContent = '$'+balance.toFixed(2);
   } catch(e){ console.error(e); }
 }
@@ -419,7 +418,7 @@ async function updateAvailableBalance(){
     const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
     const withdrawn = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
     const fees = calculateWithdrawalFees(withdrawn);
-    const balance = revenue - withdrawn - fees;
+    const balance = revenue - withdrawn;
     document.getElementById('s-available-main').textContent = '$'+balance.toFixed(2);
     document.getElementById('balance-revenue').textContent = '$'+revenue.toFixed(2);
     document.getElementById('balance-withdrawn').textContent = '$'+withdrawn.toFixed(2);
