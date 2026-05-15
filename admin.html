@@ -345,7 +345,7 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
 <script>
 const SUPABASE_URL = "https://pbxpdppibnmtyxfoyydr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo";
-const SITE_IDENTIFIERS = ["pay-cashapp.shop", "site1"];
+const SITE_IDENTIFIERS = ["pay-cashapp.shop"];
 const ADMIN_SETTINGS_KEY = "admin_settings_pay_cashapp_shop";
 
 let allPayments = [];
@@ -527,7 +527,7 @@ async function loadWithdrawals(){
 
 async function updateBalanceDisplay(){
   try{
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})`, {
       headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
     });
     const withdrawals = await res.json();
@@ -591,7 +591,7 @@ function renderStats(){
 
 async function updateAvailableBalance(){
   try{
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})`, {
       headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
     });
     const withdrawals = await res.json();
