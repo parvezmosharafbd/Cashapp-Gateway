@@ -143,7 +143,6 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
     <p class="login-sub">pay-cashapp.shop</p>
     <div class="login-tabs">
       <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
-      <button class="login-tab" onclick="switchLoginTab('settings')">Settings</button>
     </div>
     
     <div id="loginForm" class="login-form active">
@@ -159,23 +158,7 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
       <p id="loginError" class="login-error">Incorrect credentials. Try again.</p>
     </div>
     
-    <div id="settingsForm" class="login-form">
-      <div class="field-wrap">
-        <span class="field-label">NEW USERNAME</span>
-        <input type="text" id="newUsernameInput" class="field-input" placeholder="Enter new username">
-      </div>
-      <div class="field-wrap">
-        <span class="field-label">NEW PASSWORD</span>
-        <input type="password" id="newPasswordInput" class="field-input" placeholder="Enter new password">
-      </div>
-      <div class="field-wrap">
-        <span class="field-label">CONFIRM PASSWORD</span>
-        <input type="password" id="confirmPasswordInput" class="field-input" placeholder="Confirm new password">
-      </div>
-      <button class="login-btn" onclick="saveSettings()">Save Settings →</button>
-      <p id="settingsError" class="login-error">Error saving settings. Try again.</p>
-      <p id="settingsSuccess" class="settings-success">Settings saved successfully!</p>
-    </div>
+
   </div>
 </div>
 
