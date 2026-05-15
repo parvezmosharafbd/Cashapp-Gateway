@@ -506,12 +506,15 @@ async function loadWithdrawals(){
 
 async function updateBalanceDisplay(){
   try{
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+    const paymentsRes = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.settled`, {
       headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
     });
-    const withdrawals = await res.json();
-    const settled = allPayments.filter(p=>p.status==='settled');
-    const totalSettleAmount = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const settledPayments = await paymentsRes.json();
+    const withdrawalsRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+      headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const withdrawals = await withdrawalsRes.json();
+    const totalSettleAmount = settledPayments.reduce((a,p)=>a+parseFloat(p.amount||0),0);
     const totalWithdrawAmount = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
     const balance = totalSettleAmount - totalWithdrawAmount;
     document.getElementById('withdraw-balance').textContent = '$'+balance.toFixed(2);
@@ -574,12 +577,15 @@ function renderStats(){
 
 async function updateAvailableBalance(){
   try{
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+    const paymentsRes = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.settled`, {
       headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
     });
-    const withdrawals = await res.json();
-    const settled = allPayments.filter(p=>p.status==='settled');
-    const totalSettleAmount = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const settledPayments = await paymentsRes.json();
+    const withdrawalsRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
+      headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const withdrawals = await withdrawalsRes.json();
+    const totalSettleAmount = settledPayments.reduce((a,p)=>a+parseFloat(p.amount||0),0);
     const totalWithdrawAmount = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
     const balance = totalSettleAmount - totalWithdrawAmount;
     document.getElementById('s-available-main').textContent = '$'+balance.toFixed(2);
