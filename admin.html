@@ -24,6 +24,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .login-btn{width:100%;background:var(--green);border:none;border-radius:10px;padding:13px;font-family:var(--display);font-size:15px;font-weight:700;color:#000;cursor:pointer;transition:all .2s;margin-top:8px;box-shadow:0 0 20px var(--green-glow)}
 .login-btn:hover{background:#00f03a;transform:translateY(-1px)}
 .login-error{color:var(--red);font-size:12px;text-align:center;margin-top:12px;display:none}
+.login-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border2)}
+.login-tab{padding:10px 16px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:500;border-bottom:2px solid transparent;transition:all .2s}
+.login-tab.active{color:var(--green);border-bottom-color:var(--green)}
+.login-form{display:none}
+.login-form.active{display:block}
+.settings-success{color:var(--green);font-size:12px;text-align:center;margin-top:12px;display:none}
 
 /* ADMIN SCREEN */
 #adminScreen{display:none}
@@ -135,12 +141,41 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
     <div class="login-logo">$</div>
     <h1 class="login-title">Admin Access</h1>
     <p class="login-sub">pay-cashapp.shop</p>
-    <div class="field-wrap">
-      <span class="field-label">PASSWORD</span>
-      <input type="password" id="passwordInput" class="field-input" placeholder="Enter admin password">
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+      <button class="login-tab" onclick="switchLoginTab('settings')">Settings</button>
     </div>
-    <button class="login-btn" onclick="doLogin()">Sign In →</button>
-    <p id="loginError" class="login-error">Incorrect password. Try again.</p>
+    
+    <div id="loginForm" class="login-form active">
+      <div class="field-wrap">
+        <span class="field-label">USERNAME</span>
+        <input type="text" id="usernameInput" class="field-input" placeholder="Enter username">
+      </div>
+      <div class="field-wrap">
+        <span class="field-label">PASSWORD</span>
+        <input type="password" id="passwordInput" class="field-input" placeholder="Enter admin password">
+      </div>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
+      <p id="loginError" class="login-error">Incorrect credentials. Try again.</p>
+    </div>
+    
+    <div id="settingsForm" class="login-form">
+      <div class="field-wrap">
+        <span class="field-label">NEW USERNAME</span>
+        <input type="text" id="newUsernameInput" class="field-input" placeholder="Enter new username">
+      </div>
+      <div class="field-wrap">
+        <span class="field-label">NEW PASSWORD</span>
+        <input type="password" id="newPasswordInput" class="field-input" placeholder="Enter new password">
+      </div>
+      <div class="field-wrap">
+        <span class="field-label">CONFIRM PASSWORD</span>
+        <input type="password" id="confirmPasswordInput" class="field-input" placeholder="Confirm new password">
+      </div>
+      <button class="login-btn" onclick="saveSettings()">Save Settings →</button>
+      <p id="settingsError" class="login-error">Error saving settings. Try again.</p>
+      <p id="settingsSuccess" class="settings-success">Settings saved successfully!</p>
+    </div>
   </div>
 </div>
 
@@ -164,6 +199,9 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
       </button>
     </div>
     <div class="sidebar-footer">
+      <button class="nav-item" onclick="showSection('settings',this)">
+        <span class="nav-icon">🔐</span> Change Password
+      </button>
       <button class="logout-btn" onclick="doLogout()">
         <span class="nav-icon">🚪</span> Logout
       </button>
@@ -253,6 +291,27 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
         </div>
       </div>
 
+      <div id="sec-settings" class="section">
+        <div class="withdraw-form" style="max-width:100%;">
+          <h2 class="withdraw-title">Change Password</h2>
+          <div class="withdraw-field">
+            <span class="field-label">NEW USERNAME</span>
+            <input type="text" id="dash-username" class="withdraw-input" placeholder="Enter new username">
+          </div>
+          <div class="withdraw-field">
+            <span class="field-label">NEW PASSWORD</span>
+            <input type="password" id="dash-password" class="withdraw-input" placeholder="Enter new password">
+          </div>
+          <div class="withdraw-field">
+            <span class="field-label">CONFIRM PASSWORD</span>
+            <input type="password" id="dash-confirm-password" class="withdraw-input" placeholder="Confirm new password">
+          </div>
+          <button class="withdraw-btn" onclick="dashboardChangeSettings()">Update Settings</button>
+          <p id="dashSettingsError" style="color:var(--red);font-size:12px;margin-top:12px;display:none"></p>
+          <p id="dashSettingsSuccess" style="color:var(--green);font-size:12px;margin-top:12px;display:none">Settings updated successfully! You will be logged out.</p>
+        </div>
+      </div>
+
       <div id="sec-withdraw" class="section">
         <div class="withdraw-form">
           <h2 class="withdraw-title">Request Withdrawal</h2>
@@ -287,29 +346,149 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
 const SUPABASE_URL = "https://pbxpdppibnmtyxfoyydr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo";
 const SITE_IDENTIFIERS = ["pay-cashapp.shop", "site1"];
+const ADMIN_SETTINGS_KEY = "admin_settings_pay_cashapp_shop";
 
 let allPayments = [];
 let currentFilter = 'all';
 
+function getAdminSettings(){
+  const stored = localStorage.getItem(ADMIN_SETTINGS_KEY);
+  return stored ? JSON.parse(stored) : { username: 'admin', password: 'mila69', sessionToken: null };
+}
+
+function saveAdminSettings(settings){
+  localStorage.setItem(ADMIN_SETTINGS_KEY, JSON.stringify(settings));
+}
+
 function openSidebar(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
 function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
+function switchLoginTab(tab){
+  document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.login-form').forEach(f=>f.classList.remove('active'));
+  event.target.classList.add('active');
+  if(tab === 'login'){
+    document.getElementById('loginForm').classList.add('active');
+  } else {
+    document.getElementById('settingsForm').classList.add('active');
+  }
+}
+
 function doLogin(){
-  const val = document.getElementById('passwordInput').value;
-  if(val === 'mila69'){
+  const username = document.getElementById('usernameInput').value;
+  const password = document.getElementById('passwordInput').value;
+  const settings = getAdminSettings();
+  
+  if(username === settings.username && password === settings.password){
+    const sessionToken = Date.now().toString();
     sessionStorage.setItem('admin_auth','1');
+    sessionStorage.setItem('admin_session_token', sessionToken);
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminScreen').style.display='block';
     loadAll();
-  } else { document.getElementById('loginError').style.display='block'; }
+  } else { 
+    document.getElementById('loginError').style.display='block';
+    setTimeout(()=>{ document.getElementById('loginError').style.display='none'; }, 3000);
+  }
 }
 
-function doLogout(){ sessionStorage.removeItem('admin_auth'); location.reload(); }
+function saveSettings(){
+  const newUsername = document.getElementById('newUsernameInput').value;
+  const newPassword = document.getElementById('newPasswordInput').value;
+  const confirmPassword = document.getElementById('confirmPasswordInput').value;
+  
+  if(!newUsername || !newPassword || !confirmPassword){
+    document.getElementById('settingsError').textContent = 'All fields are required';
+    document.getElementById('settingsError').style.display='block';
+    return;
+  }
+  
+  if(newPassword !== confirmPassword){
+    document.getElementById('settingsError').textContent = 'Passwords do not match';
+    document.getElementById('settingsError').style.display='block';
+    return;
+  }
+  
+  if(newPassword.length < 4){
+    document.getElementById('settingsError').textContent = 'Password must be at least 4 characters';
+    document.getElementById('settingsError').style.display='block';
+    return;
+  }
+  
+  const settings = getAdminSettings();
+  settings.username = newUsername;
+  settings.password = newPassword;
+  saveAdminSettings(settings);
+  
+  document.getElementById('settingsError').style.display='none';
+  document.getElementById('settingsSuccess').style.display='block';
+  document.getElementById('newUsernameInput').value = '';
+  document.getElementById('newPasswordInput').value = '';
+  document.getElementById('confirmPasswordInput').value = '';
+  
+  setTimeout(()=>{
+    sessionStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_session_token');
+    location.reload();
+  }, 1500);
+}
+
+function doLogout(){ 
+  sessionStorage.removeItem('admin_auth');
+  sessionStorage.removeItem('admin_session_token');
+  location.reload();
+}
+
+function dashboardChangeSettings(){
+  const newUsername = document.getElementById('dash-username').value;
+  const newPassword = document.getElementById('dash-password').value;
+  const confirmPassword = document.getElementById('dash-confirm-password').value;
+  
+  if(!newUsername || !newPassword || !confirmPassword){
+    document.getElementById('dashSettingsError').textContent = 'All fields are required';
+    document.getElementById('dashSettingsError').style.display='block';
+    return;
+  }
+  
+  if(newPassword !== confirmPassword){
+    document.getElementById('dashSettingsError').textContent = 'Passwords do not match';
+    document.getElementById('dashSettingsError').style.display='block';
+    return;
+  }
+  
+  if(newPassword.length < 4){
+    document.getElementById('dashSettingsError').textContent = 'Password must be at least 4 characters';
+    document.getElementById('dashSettingsError').style.display='block';
+    return;
+  }
+  
+  const settings = getAdminSettings();
+  settings.username = newUsername;
+  settings.password = newPassword;
+  settings.sessionToken = null;
+  saveAdminSettings(settings);
+  
+  document.getElementById('dashSettingsError').style.display='none';
+  document.getElementById('dashSettingsSuccess').style.display='block';
+  
+  setTimeout(()=>{
+    sessionStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_session_token');
+    location.reload();
+  }, 1500);
+}
 
 if(sessionStorage.getItem('admin_auth')==='1'){
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('adminScreen').style.display='block';
-  loadAll();
+  const storedToken = sessionStorage.getItem('admin_session_token');
+  const settings = getAdminSettings();
+  if(storedToken === settings.sessionToken){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminScreen').style.display='block';
+    loadAll();
+  } else {
+    sessionStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_session_token');
+  }
 }
 
 function showSection(name,btn){
