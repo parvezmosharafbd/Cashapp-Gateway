@@ -210,16 +210,12 @@ td{padding:12px 14px;font-size:12px;border-bottom:1px solid var(--border)}
           <div class="balance-value" id="s-available-main">$0.00</div>
           <div class="balance-details">
             <div class="balance-detail-item">
-              <span class="balance-detail-label">Revenue:</span>
+              <span class="balance-detail-label">Settled Amount:</span>
               <span id="balance-revenue">$0.00</span>
             </div>
             <div class="balance-detail-item">
-              <span class="balance-detail-label">Withdrawn:</span>
+              <span class="balance-detail-label">Withdrawn Amount:</span>
               <span id="balance-withdrawn">$0.00</span>
-            </div>
-            <div class="balance-detail-item">
-              <span class="balance-detail-label">Fees:</span>
-              <span id="balance-fees">$0.00</span>
             </div>
           </div>
         </div>
@@ -589,7 +585,6 @@ async function updateAvailableBalance(){
     document.getElementById('s-available-main').textContent = '$'+balance.toFixed(2);
     document.getElementById('balance-revenue').textContent = '$'+totalSettleAmount.toFixed(2);
     document.getElementById('balance-withdrawn').textContent = '$'+totalWithdrawAmount.toFixed(2);
-    document.getElementById('balance-fees').textContent = '$0.00';
   } catch(e){ console.error(e); }
 }
 
