@@ -589,6 +589,7 @@ async function updateAvailableBalance(){
     document.getElementById('s-available-main').textContent = '$'+balance.toFixed(2);
     document.getElementById('balance-revenue').textContent = '$'+totalSettleAmount.toFixed(2);
     document.getElementById('balance-withdrawn').textContent = '$'+totalWithdrawAmount.toFixed(2);
+    document.getElementById('withdraw-balance').textContent = '$'+balance.toFixed(2);
   } catch(e){ console.error(e); }
 }
 
