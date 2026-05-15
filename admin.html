@@ -381,8 +381,8 @@ function doLogin(){
   
   if(username === settings.username && password === settings.password){
     const sessionToken = Date.now().toString();
-    sessionStorage.setItem('admin_auth','1');
-    sessionStorage.setItem('admin_session_token', sessionToken);
+    localStorage.setItem('admin_auth','1');
+    localStorage.setItem('admin_session_token', sessionToken);
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminScreen').style.display='block';
     loadAll();
@@ -427,15 +427,15 @@ function saveSettings(){
   document.getElementById('confirmPasswordInput').value = '';
   
   setTimeout(()=>{
-    sessionStorage.removeItem('admin_auth');
-    sessionStorage.removeItem('admin_session_token');
+    localStorage.removeItem('admin_auth');
+    localStorage.removeItem('admin_session_token');
     location.reload();
   }, 1500);
 }
 
 function doLogout(){ 
-  sessionStorage.removeItem('admin_auth');
-  sessionStorage.removeItem('admin_session_token');
+  localStorage.removeItem('admin_auth');
+  localStorage.removeItem('admin_session_token');
   location.reload();
 }
 
@@ -472,22 +472,22 @@ function dashboardChangeSettings(){
   document.getElementById('dashSettingsSuccess').style.display='block';
   
   setTimeout(()=>{
-    sessionStorage.removeItem('admin_auth');
-    sessionStorage.removeItem('admin_session_token');
+    localStorage.removeItem('admin_auth');
+    localStorage.removeItem('admin_session_token');
     location.reload();
   }, 1500);
 }
 
-if(sessionStorage.getItem('admin_auth')==='1'){
-  const storedToken = sessionStorage.getItem('admin_session_token');
+if(localStorage.getItem('admin_auth')==='1'){
+  const storedToken = localStorage.getItem('admin_session_token');
   const settings = getAdminSettings();
   if(storedToken === settings.sessionToken){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminScreen').style.display='block';
     loadAll();
   } else {
-    sessionStorage.removeItem('admin_auth');
-    sessionStorage.removeItem('admin_session_token');
+    localStorage.removeItem('admin_auth');
+    localStorage.removeItem('admin_session_token');
   }
 }
 
