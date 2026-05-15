@@ -515,11 +515,9 @@ async function updateBalanceDisplay(){
     });
     const withdrawals = await res.json();
     const settled = allPayments.filter(p=>p.status==='settled');
-    const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
-    const withdrawn = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
-    let balance = revenue - withdrawn;
-    // Safeguard: Never allow negative balance
-    if(balance < 0) balance = 0;
+    const totalSettleAmount = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const totalWithdrawAmount = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
+    const balance = totalSettleAmount - totalWithdrawAmount;
     document.getElementById('withdraw-balance').textContent = '$'+balance.toFixed(2);
   } catch(e){ console.error(e); }
 }
@@ -585,16 +583,13 @@ async function updateAvailableBalance(){
     });
     const withdrawals = await res.json();
     const settled = allPayments.filter(p=>p.status==='settled');
-    const revenue = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
-    const withdrawn = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
-    const totalFees = withdrawals.reduce((a,w)=>a+calculateWithdrawalFees(parseFloat(w.amount||0)),0);
-    let balance = revenue - withdrawn;
-    // Safeguard: Never allow negative balance
-    if(balance < 0) balance = 0;
+    const totalSettleAmount = settled.reduce((a,p)=>a+parseFloat(p.amount||0),0);
+    const totalWithdrawAmount = withdrawals.reduce((a,w)=>a+parseFloat(w.amount||0),0);
+    const balance = totalSettleAmount - totalWithdrawAmount;
     document.getElementById('s-available-main').textContent = '$'+balance.toFixed(2);
-    document.getElementById('balance-revenue').textContent = '$'+revenue.toFixed(2);
-    document.getElementById('balance-withdrawn').textContent = '$'+withdrawn.toFixed(2);
-    document.getElementById('balance-fees').textContent = '$'+totalFees.toFixed(2);
+    document.getElementById('balance-revenue').textContent = '$'+totalSettleAmount.toFixed(2);
+    document.getElementById('balance-withdrawn').textContent = '$'+totalWithdrawAmount.toFixed(2);
+    document.getElementById('balance-fees').textContent = '$0.00';
   } catch(e){ console.error(e); }
 }
 
