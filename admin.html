@@ -506,8 +506,12 @@ async function loadWithdrawals(){
 
 async function updateBalanceDisplay(){
   try{
-    // Use fixed settled amount as per admin's records
-    const totalSettleAmount = 3847.10;
+    // Fetch all settled payments from database
+    const paymentsRes = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.settled`, {
+      headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const settledPayments = await paymentsRes.json();
+    const totalSettleAmount = settledPayments.reduce((a,p)=>a+parseFloat(p.amount||0),0);
     
     const withdrawalsRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
       headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
@@ -575,8 +579,12 @@ function renderStats(){
 
 async function updateAvailableBalance(){
   try{
-    // Use fixed settled amount as per admin's records
-    const totalSettleAmount = 3847.10;
+    // Fetch all settled payments from database
+    const paymentsRes = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.settled`, {
+      headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const settledPayments = await paymentsRes.json();
+    const totalSettleAmount = settledPayments.reduce((a,p)=>a+parseFloat(p.amount||0),0);
     
     const withdrawalsRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&source=in.(${SITE_IDENTIFIERS.map(s=>`"${s}"`).join(',')})&status=eq.completed`, {
       headers:{ 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }
