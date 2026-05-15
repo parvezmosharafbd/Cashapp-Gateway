@@ -527,6 +527,10 @@ async function submitWithdraw(){
   const address = document.getElementById('withdraw-address').value;
   if(!amount || !address){ alert('Please fill all fields'); return; }
   
+  // Get current balance before allowing withdrawal
+  const currentBalance = parseFloat(document.getElementById('withdraw-balance').textContent.replace('$',''));
+  if(amount > currentBalance){ alert('Insufficient balance. Available: $' + currentBalance.toFixed(2)); return; }
+  
   const fee = calculateWithdrawalFees(amount);
   const confirmMsg = `Withdraw $${amount.toFixed(2)}?\nFee: $${fee.toFixed(2)} (for every $1000)\nNet amount: $${(amount - fee).toFixed(2)}`;
   
