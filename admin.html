@@ -381,6 +381,8 @@ function doLogin(){
   
   if(username === settings.username && password === settings.password){
     const sessionToken = Date.now().toString();
+    settings.sessionToken = sessionToken;
+    saveAdminSettings(settings);
     localStorage.setItem('admin_auth','1');
     localStorage.setItem('admin_session_token', sessionToken);
     document.getElementById('loginScreen').style.display='none';
