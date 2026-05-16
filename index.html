@@ -9,9 +9,10 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
-  background-image: url('IMG_20260517_043500.png'); /* আপনার আপলোড করা ছবির নাম */
+  background-image: url('IMG_20260517_043500.png');
   background-size: cover;
-  background-position: center;
+  background-position: center top; /* ছবিটিকে উপর থেকে শুরু করবে */
+  background-repeat: no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
   display: flex;
@@ -19,19 +20,21 @@ body {
   justify-content: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding: 16px;
-  background-color: #000; /* ছবি লোড হওয়ার আগে কালো ব্যাকগ্রাউন্ড দেখাবে */
+  margin: 0;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.88); /* ৮৮% সাদা স্বচ্ছ ব্যাকগ্রাউন্ড */
-  backdrop-filter: blur(12px); /* পেছনের ছবি ঝাপসা দেখাবে, যা দেখতে প্রিমিয়াম লাগে */
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.75); /* স্বচ্ছতা বাড়িয়ে ০.৭৫ করা হয়েছে */
+  backdrop-filter: blur(15px); /* ঝাপসা করার মাত্রা বাড়ানো হয়েছে */
+  -webkit-backdrop-filter: blur(15px);
   border-radius: 28px;
   width: 100%;
   max-width: 420px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3); /* একটু গাঢ় শ্যাডো যাতে কার্ডটি ফুটে ওঠে */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* হালকা বর্ডার */
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1; /* কার্ডটিকে ছবির উপরে নিশ্চিত করবে */
 }
 
 .drag-bar {
